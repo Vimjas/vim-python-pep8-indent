@@ -1,8 +1,8 @@
 vim-python-pep8-indent
 ======================
 
-This small script that goes directly into `~/.vim/indent/` modifies vim_’s
-indentation behavior to comply with PEP8_: ::
+This small script modifies vim_’s indentation behavior to comply with PEP8_ and
+my aesthetic preferences: ::
 
    foobar(foo,
           bar)
@@ -29,9 +29,19 @@ Unfortunately, I wasn’t able to reach any of the original authors/maintainers:
 work and release it hereby to the *Public Domain*. If anyone – who has a say in
 this – objects, please let me know.
 
+Installation
+------------
+
+The easiest way is to use pathogen_ and do a ::
+
+   git clone https://github.com/hynek/vim-python-pep8-indent.git
+
+in your `~/.vim/bundle`. And you *should* use pathogen. Really.
+
 .. _vim: http://www.vim.org/
 .. _PEP8: http://www.python.org/dev/peps/pep-0008/
 .. _`script repo`: http://www.vim.org/scripts/script.php?script_id=974
 .. _`Steve Losh`: http://stevelosh.com/
 .. _here: https://gist.github.com/2965846
 .. _`Vimscript`: http://learnvimscriptthehardway.stevelosh.com/
+.. _pathogen: https://github.com/tpope/vim-pathogen
