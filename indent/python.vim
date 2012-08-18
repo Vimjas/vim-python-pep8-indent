@@ -172,9 +172,9 @@ function! GetPythonIndent(lnum)
         endif
     endif
 
-    " If the previous line ended with a colon, indent relative to
-    " statement start.
-    if pline =~ ':\s*$'
+    " If the previous line ended with a colon and is not a comment, indent
+    " relative to statement start.
+    if pline =~ ':\s*$' && pline !~ '^\s*#'
         return indent(sslnum) + &sw
     endif
 
