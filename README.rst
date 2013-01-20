@@ -38,6 +38,12 @@ The easiest way is to use pathogen_ and do a ::
 
 in your `~/.vim/bundle`. And you *should* use pathogen. Really.
 
+Please note that Kirill Klenov’s python-mode_ ships an own version of of this
+bundle.  Therefore, if you want to use this version specifically, you’ll have
+to disable python-mode’s using: ::
+
+   let g:pymode_indent = 0
+
 .. _vim: http://www.vim.org/
 .. _PEP8: http://www.python.org/dev/peps/pep-0008/
 .. _`script repo`: http://www.vim.org/scripts/script.php?script_id=974
@@ -45,3 +51,4 @@ in your `~/.vim/bundle`. And you *should* use pathogen. Really.
 .. _here: https://gist.github.com/2965846
 .. _`Vimscript`: http://learnvimscriptthehardway.stevelosh.com/
 .. _pathogen: https://github.com/tpope/vim-pathogen
+.. _python-mode: https://github.com/klen/python-mode
