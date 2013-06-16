@@ -15,7 +15,7 @@ let b:did_indent = 1
 setlocal expandtab
 setlocal nolisp
 setlocal autoindent
-setlocal indentexpr=GetPythonIndent(v:lnum)
+setlocal indentexpr=GetPythonPEPIndent(v:lnum)
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},=elif,=except
 
 let s:maxoff = 50
@@ -101,7 +101,7 @@ function! s:BlockStarter(lnum, block_start_re)
     return -1
 endfunction
 
-function! GetPythonIndent(lnum)
+function! GetPythonPEPIndent(lnum)
 
     " First line has indent 0
     if a:lnum == 1
