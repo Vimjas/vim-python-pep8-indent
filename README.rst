@@ -1,6 +1,9 @@
 vim-python-pep8-indent
 ======================
 
+.. image:: https://travis-ci.org/hynek/vim-python-pep8-indent.png?branch=travis
+   :target: https://travis-ci.org/hynek/vim-python-pep8-indent
+
 This small script modifies vim_’s indentation behavior to comply with PEP8_ and
 my aesthetic preferences: ::
 
