@@ -41,9 +41,8 @@ The easiest way is to use pathogen_ and do a ::
 
 in your `~/.vim/bundle`. And you *should* use pathogen. Really.
 
-Please note that Kirill Klenov’s python-mode_ ships an own version of of this
-bundle.  Therefore, if you want to use this version specifically, you’ll have
-to disable python-mode’s using: ::
+Please note that Kirill Klenov’s python-mode_ ships an own version of this bundle.
+Therefore, if you want to use this version specifically, you’ll have to disable python-mode’s using: ::
 
    let g:pymode_indent = 0
 
