@@ -67,6 +67,20 @@ describe "vim" do
     end
   end
 
+  describe "when '#' is contained in a string that is followed by a colon" do
+    it "indents by one level" do
+        vim.feedkeys 'iif "some#thing" == "test":#test\<CR>pass'
+        indent.should == shiftwidth
+    end
+  end
+
+  describe "when '#' is not contained in a string and is followed by a colon" do
+    it "does not indent" do
+        vim.feedkeys 'iif "some#thing" == "test"#:test\<CR>'
+        indent.should == 0
+    end
+  end
+
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'
