@@ -174,7 +174,7 @@ function! GetPythonPEPIndent(lnum)
 
     " If the previous line ended with a colon and is not a comment, indent
     " relative to statement start.
-    if pline =~ '^[^#]*:\s*\(#.*\)\?$'
+    if pline =~ '^\([^#]\|\(\"#.*\"\)\|\(''#.*''\)\)*:\s*\(#.*\)\?$'
         return indent(sslnum) + &sw
     endif
 
