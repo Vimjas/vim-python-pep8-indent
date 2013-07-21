@@ -3,7 +3,6 @@
 " Maintainer:       Hynek Schlawack <hs@ox.cx>
 " Prev Maintainer:  Eric Mc Sween <em@tomcom.de> (address invalid)
 " Original Author:  David Bustos <bustos@caltech.edu> (address invalid)
-" Last Change:      2012-06-21
 " License:          Public Domain
 
 " Only load this indent file when no other was loaded.
@@ -174,7 +173,9 @@ function! GetPythonPEPIndent(lnum)
 
     " If the previous line ended with a colon and is not a comment, indent
     " relative to statement start.
-    if pline =~ '^\([^#]\|\(\"#.*\"\)\|\(''#.*''\)\)*:\s*\(#.*\)\?$'
+    let pline = substitute(pline, '\\\\', '', 'g')
+    let pline = substitute(pline, '".\{-}\\\@1<!"\|''.\{-}\\\@1<!''', '', 'g')
+    if pline =~ '^[^#]*:\s*\(#.*\)\?$'
         return indent(sslnum) + &sw
     endif
 

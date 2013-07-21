@@ -67,6 +67,22 @@ describe "vim" do
     end
   end
 
+  describe "when '#' is contained in a string that is followed by a colon" do
+    before { vim.feedkeys 'itest "some#thing":\<CR>' }
+
+    it "indents by one level" do
+      indent.should == shiftwidth
+    end
+  end
+
+  describe "when after comments followed by a colon" do
+    before { vim.feedkeys 'itest("some#thing") # comment:\<CR>' }
+
+    it "does not indent" do
+      indent.should == 0
+    end
+  end
+
   def shiftwidth
     @shiftwidth ||= vim.echo("exists('*shiftwidth') ? shiftwidth() : &sw").to_i
   end
