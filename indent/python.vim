@@ -189,6 +189,13 @@ function! GetPythonPEPIndent(lnum)
         return -1
     endif
 
+    " If this line is dedented and the number of indent spaces is valid
+    " (multiple of the indentation size), trust the user
+    let dedent_size = thisindent - indent(plnum)
+    if dedent_size < 0 && thisindent % &sw == 0
+        return -1
+    endif
+
     " In all other cases, line up with the start of the previous statement.
     return indent(sslnum)
 endfunction
