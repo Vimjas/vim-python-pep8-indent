@@ -9,8 +9,16 @@ Please:
 - Write [good commit messages].
 - Ideally, [squash] your commits, i.e. make your pull requests just one commit.
 
+About the tests:
+
+- They written in ruby using [vimrunner] which requires [rspec]
+- Add the tests to `spec/indent/indent_spec.rb`. Look at the `describe` blocks to get the hang of it.
+- Run the tests with the command `rspec spec/`
+
 Thank you for considering to contribute!
 
 
 [squash]: http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html
 [good commit messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+[vimrunner]: https://github.com/AndrewRadev/vimrunner
+[rspec]: https://github.com/rspec/rspec
