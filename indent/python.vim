@@ -160,15 +160,17 @@ function! GetPythonPEPIndent(lnum)
         return -1
     endif
 
-    " If this line is explicitly joined, try to find an indentation that looks
-    " good.
+    " If this line is explicitly joined, find the first indentation that is a
+    " multiple of four and will distinguish itself from next logical line.
     if pline =~ '\\$'
-        let compound_statement = '^\s*\(if\|while\|for\s.*\sin\|except\)\s*'
-        let maybe_indent = matchend(getline(sslnum), compound_statement)
-        if maybe_indent != -1
-            return maybe_indent
+        let maybe_indent = indent(sslnum) + &sw
+        let control_structure = '^\s*\(if\|while\|for\s.*\sin\|except\)\s*'
+        if match(getline(sslnum), control_structure) != -1
+            " add extra indent to avoid E125
+            return maybe_indent + &sw
         else
-            return indent(sslnum) + &sw * 2
+            " control structure not found
+            return maybe_indent 
         endif
     endif
 
