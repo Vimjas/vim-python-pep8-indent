@@ -11,3 +11,4 @@ It is currently maintained by Hynek Schlawack with the generous help of the foll
 - Joseph Irwin
 - Steve Losh
 - Sylvain Soliman
+- has2k1
