@@ -84,19 +84,19 @@ describe "vim" do
   end
 
   describe "when using simple control structures" do
-      it "indents four spaces" do
+      it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'
           indent.should == shiftwidth
       end
   end
 
   describe "when a line breaks with a manual '\\'" do
-    it "indents 4 spaces on normal line" do
+    it "indents shiftwidth spaces on normal line" do
         vim.feedkeys 'ivalue = test + \\\\\<CR>'
         indent.should == shiftwidth
     end
 
-    it "indents 8 spaces for control structures" do
+    it "indents 2x shiftwidth spaces for control structures" do
         vim.feedkeys 'iif somevalue == xyz and \\\\\<CR>'
         indent.should == shiftwidth * 2
     end
