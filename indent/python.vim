@@ -170,7 +170,7 @@ function! GetPythonPEPIndent(lnum)
             return maybe_indent + &sw
         else
             " control structure not found
-            return maybe_indent 
+            return maybe_indent
         endif
     endif
 
