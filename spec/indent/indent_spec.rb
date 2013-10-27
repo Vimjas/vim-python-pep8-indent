@@ -30,22 +30,22 @@ describe "vim" do
     end
   end
 
-  # describe "when after a '(' that is at the end of its line" do
-  #   before { vim.feedkeys 'itest(\<CR>' }
+  describe "when after a '(' that is at the end of its line" do
+    before { vim.feedkeys 'itest(\<CR>' }
 
-  #   it "indents by one level" do
-  #     proposed_indent.should == shiftwidth
-  #     vim.feedkeys 'something'
-  #     indent.should == shiftwidth
-  #     vim.normal '=='
-  #     indent.should == shiftwidth
-  #   end
+    it "indents by one level" do
+      proposed_indent.should == shiftwidth
+      vim.feedkeys 'something'
+      indent.should == shiftwidth
+      vim.normal '=='
+      indent.should == shiftwidth
+    end
 
-  #   it "puts the closing parenthesis at the same level" do
-  #     vim.feedkeys ')'
-  #     indent.should == 0
-  #   end
-  # end
+    it "puts the closing parenthesis at the same level" do
+      vim.feedkeys ')'
+      indent.should == 0
+    end
+  end
 
   describe "when after an '(' that is followed by something" do
     before { vim.feedkeys 'itest(something,\<CR>' }
@@ -101,7 +101,11 @@ describe "vim" do
     vim.echo("indent('.')").to_i
   end
   def proposed_indent
-    vim.echo("GetPythonPEPIndent(line('.'))").to_i
+    line = vim.echo("line('.')")
+    col = vim.echo("col('.')")
+    indent_value = vim.echo("GetPythonPEPIndent(line('.'))").to_i
+    vim.command("call cursor(#{line}, #{col})")
+    return indent_value
   end
 end
 
