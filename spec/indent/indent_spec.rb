@@ -91,6 +91,24 @@ describe "vim" do
     end
   end
 
+  describe "when current line is dedented compared to previous line" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>return True\<CR>\<ESC>' }
+     it "and current line has a valid indentation (Part 1)" do
+        vim.feedkeys '0i\<TAB>if y:'
+        proposed_indent.should == -1
+     end
+
+     it "and current line has a valid indentation (Part 2)" do
+        vim.feedkeys '0i\<TAB>\<TAB>if y:'
+        proposed_indent.should == -1
+     end
+
+     it "and current line has an invalid indentation" do
+        vim.feedkeys 'i    while True:\<CR>'
+        indent.should == previous_indent + shiftwidth
+     end
+  end
+
   def shiftwidth
     @shiftwidth ||= vim.echo("exists('*shiftwidth') ? shiftwidth() : &sw").to_i
   end
@@ -99,6 +117,10 @@ describe "vim" do
   end
   def indent
     vim.echo("indent('.')").to_i
+  end
+  def previous_indent
+    pline = vim.echo("line('.')").to_i - 1
+    vim.echo("indent('#{pline}')").to_i
   end
   def proposed_indent
     line = vim.echo("line('.')")
