@@ -2,7 +2,8 @@ require 'vimrunner'
 require 'vimrunner/rspec'
 
 Vimrunner::RSpec.configure do |config|
-  config.reuse_server = true
+  # FIXME: reuse_server = true seems to hang after a certain number of test cases
+  config.reuse_server = false
 
   config.start_vim do
     vim = Vimrunner.start
