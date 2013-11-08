@@ -132,13 +132,22 @@ function! s:indent_like_opening_paren(lnum)
 
     if nothing_after_opening_paren
         if starts_with_closing_paren
-            return base
+            let res = base
         else
-            return base + s:sw()
+            let res = base + s:sw()
         endif
     else
         " Indent to match position of opening paren.
-        return paren_col
+        let res = paren_col
+    endif
+
+    " If this line is the continuation of a control statement
+    " indent further to distinguish the continuation line
+    " from the next logical line.
+    if text =~# s:control_statement && res == base + s:sw()
+        return base + s:sw() * 2
+    else
+        return res
     endif
 endfunction
 

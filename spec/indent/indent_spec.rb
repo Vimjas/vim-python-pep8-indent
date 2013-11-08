@@ -88,6 +88,47 @@ shared_examples_for "vim" do
       end
   end
 
+  describe "when using parens and control statements" do
+    it "avoids ambiguity by using extra indentation" do
+      vim.feedkeys 'iif (111 and\<CR>'
+      if shiftwidth == 4
+        indent.should == shiftwidth * 2
+      else
+        indent.should == 4
+      end
+      vim.feedkeys '222):\<CR>'
+      indent.should == shiftwidth
+      vim.feedkeys 'pass\<CR>'
+      indent.should == 0
+    end
+
+    it "still aligns parens properly if not ambiguous" do
+      vim.feedkeys 'iwhile (111 and\<CR>'
+      indent.should == 7
+      vim.feedkeys '222):\<CR>'
+      indent.should == shiftwidth
+      vim.feedkeys 'pass\<CR>'
+      indent.should == 0
+    end
+
+    it "still handles multiple parens correctly" do
+      vim.feedkeys 'iif (111 and (222 and 333\<CR>'
+      indent.should == 13
+      vim.feedkeys 'and 444\<CR>'
+      indent.should == 13
+      vim.feedkeys ')\<CR>'
+      if shiftwidth == 4
+        indent.should == shiftwidth * 2
+      else
+        indent.should == 4
+      end
+      vim.feedkeys 'and 555):\<CR>'
+      indent.should == shiftwidth
+      vim.feedkeys 'pass\<CR>'
+      indent.should == 0
+    end
+  end
+
   describe "when a line breaks with a manual '\\'" do
     it "indents shiftwidth spaces on normal line" do
         vim.feedkeys 'ivalue = test + \\\\\<CR>'
