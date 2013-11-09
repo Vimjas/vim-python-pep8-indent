@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "vim" do
+shared_examples_for "vim" do
 
   before(:each) { vim.normal 'gg"_dG' }  # clear buffer
 
@@ -100,7 +100,7 @@ describe "vim" do
     end
 
     it "indents relative to line above" do
-        vim.feedkeys 'i\tvalue = test + \\\\\<CR>'
+        vim.feedkeys 'i\<TAB>value = test + \\\\\<CR>'
         indent.should == shiftwidth * 2
     end
   end
@@ -145,3 +145,18 @@ describe "vim" do
   end
 end
 
+describe "vim when using width of 4" do
+  before {
+    vim.command("set sw=4 ts=4 sts=4 et")
+  }
+
+  it_behaves_like "vim"
+end
+
+describe "vim when using width of 8" do
+  before {
+    vim.command("set sw=8 ts=8 sts=8 et")
+  }
+
+  it_behaves_like "vim"
+end
