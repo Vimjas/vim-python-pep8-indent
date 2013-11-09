@@ -3,7 +3,6 @@
 " Maintainer:       Hynek Schlawack <hs@ox.cx>
 " Prev Maintainer:  Eric Mc Sween <em@tomcom.de> (address invalid)
 " Original Author:  David Bustos <bustos@caltech.edu> (address invalid)
-" Last Change:      2012-06-21
 " License:          Public Domain
 
 " Only load this indent file when no other was loaded.
@@ -176,33 +175,13 @@ function! GetPythonPEPIndent(lnum)
 
     " If the previous line ended with a colon and is not a comment, indent
     " relative to statement start.
-    let col = 0
-    let len = strlen(pline)
-    while col < len
-        if pline[col] == "\\"
-            let col = col + 1
-        elseif pline[col] == '"'
-            let col = col + 1
-            while pline[col] != '"'
-                if pline[col] == '\'
-                    let col = col + 1
-                endif
-                let col = col + 1
-            endwhile
-        elseif pline[col] == "'"
-            let col = col + 1
-            while pline[col] != "'"
-                if pline[col] == '\'
-                    let col = col + 1
-                endif
-                let col = col + 1
-            endwhile
-        elseif pline[col] == '#'
-            let pline = strpart(pline, 0, col)
-        endif
-        let col = col + 1
-    endwhile
-    if pline =~ ':\s*\(#.*\)\?$'
+    let pline = substitute(pline, '\\\\', '', 'g')
+    if v:version > 703 || (v:version == 703 && has('patch1037'))
+        let pline = substitute(pline, '".\{-}\\\@1<!"\|''.\{-}\\\@1<!''', '', 'g')
+    else
+        let pline = substitute(pline, '".\{-}\\\@<!"\|''.\{-}\\\@<!''', '', 'g')
+    endif
+    if pline =~ '^[^#]*:\s*\(#.*\)\?$'
         return indent(sslnum) + &sw
     endif
 
