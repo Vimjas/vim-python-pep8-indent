@@ -67,6 +67,18 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when after multiple parens of different types" do
+    it "indents by one level" do
+      vim.feedkeys 'if({\<CR>'
+      indent.should == shiftwidth
+    end
+
+    it "lines up with the last paren" do
+      vim.feedkeys 'ifff({123: 456,\<CR>'
+      indent.should == 5
+    end
+  end
+
   describe "when '#' is contained in a string that is followed by a colon" do
     it "indents by one level" do
         vim.feedkeys 'iif "some#thing" == "test":#test\<CR>pass'

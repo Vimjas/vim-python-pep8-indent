@@ -80,7 +80,7 @@ function! s:find_opening_paren(...)
     call filter(positions, 'v:val[0]')
     call sort(positions, 's:pair_sort')
 
-    return get(positions, 0, [0, 0])
+    return get(positions, -1, [0, 0])
 endfunction
 
 " Find the start of a multi-line statement
