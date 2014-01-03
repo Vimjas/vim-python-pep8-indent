@@ -100,6 +100,18 @@ shared_examples_for "vim" do
       end
   end
 
+  describe "when writing an 'else' block" do
+    it "aligns to the preceeding 'for' block" do
+      vim.feedkeys 'ifor x in "abc":\<CR>pass\<CR>else:'
+      indent.should == 0
+    end
+
+    it "aligns to the preceeding 'if' block" do
+      vim.feedkeys 'ifor x in "abc":\<CR>if True:\<CR>pass\<CR>else:'
+      indent.should == shiftwidth
+    end
+  end
+
   describe "when using parens and control statements" do
     it "avoids ambiguity by using extra indentation" do
       vim.feedkeys 'iif (111 and\<CR>'

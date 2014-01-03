@@ -19,7 +19,8 @@ setlocal indentkeys=!^F,o,O,<:>,0),0],0},=elif,=except
 
 let s:maxoff = 50
 let s:block_rules = {
-  \ '^\s*\(elif\|else\)\>': ['if', 'elif'],
+  \ '^\s*elif\>': ['if', 'elif'],
+  \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
   \ '^\s*except\>': ['try', 'except'],
   \ '^\s*finally\>': ['try', 'except', 'else']
   \ }
