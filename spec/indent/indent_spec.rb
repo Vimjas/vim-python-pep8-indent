@@ -144,6 +144,15 @@ shared_examples_for "vim" do
      end
   end
 
+  describe "when an 'else' is followed by" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>else:\<CR>XXX\<CR>' }
+     it "a 'finally', it lines up with the 'else'" do
+        vim.feedkeys 'finally:'
+        indent.should == shiftwidth * 2
+     end
+  end
+
+
   describe "when a 'try' is followed by" do
      before { vim.feedkeys 'i\<TAB>\<TAB>try:\<CR>' }
      it "an 'except', it lines up with the 'try'" do

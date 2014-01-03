@@ -137,10 +137,20 @@ function! GetPythonPEPIndent(lnum)
         endif
     endif
 
-    " If the line starts with 'except', or 'finally', line up with 'try'
-    " or 'except'.
-    if thisline =~ '^\s*\(except\|finally\)\>'
+    " If the line starts with 'except' line up with 'try' or 'except'.
+    if thisline =~ '^\s*except\>'
         let bslnum = s:BlockStarter(a:lnum, '^\s*\(try\|except\)\>')
+        if bslnum > 0
+            return indent(bslnum)
+        else
+            return -1
+        endif
+    endif
+
+    " If the line starts with 'finally', line up with 'try', 'else', or
+    " 'except'.
+    if thisline =~ '^\s*finally\>'
+        let bslnum = s:BlockStarter(a:lnum, '^\s*\(try\|except\|else\)\>')
         if bslnum > 0
             return indent(bslnum)
         else
