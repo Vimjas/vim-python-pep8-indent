@@ -101,7 +101,6 @@ function! s:BlockStarter(lnum, block_start_re)
 endfunction
 
 function! GetPythonPEPIndent(lnum)
-
     " First line has indent 0
     if a:lnum == 1
         return 0
@@ -128,8 +127,8 @@ function! GetPythonPEPIndent(lnum)
     let thisline = getline(a:lnum)
     let thisindent = indent(a:lnum)
 
-    " If the line starts with 'elif' or 'else', line up with 'if' or 'elif'
-    if thisline =~ '^\s*\(elif\|else\)\>'
+    " If the line starts with 'elif', line up with 'if' or 'elif'
+    if thisline =~ '^\s*elif\>'
         let bslnum = s:BlockStarter(a:lnum, '^\s*\(if\|elif\)\>')
         if bslnum > 0
             return indent(bslnum)
@@ -138,10 +137,22 @@ function! GetPythonPEPIndent(lnum)
         endif
     endif
 
-    " If the line starts with 'except' or 'finally', line up with 'try'
-    " or 'except'
+    " If the line starts with 'except', or 'finally', line up with 'try'
+    " or 'except'.
     if thisline =~ '^\s*\(except\|finally\)\>'
         let bslnum = s:BlockStarter(a:lnum, '^\s*\(try\|except\)\>')
+        if bslnum > 0
+            return indent(bslnum)
+        else
+            return -1
+        endif
+    endif
+
+    " If the line starts with 'else', line it up with 'try', 'except', 'for',
+    " 'if', or 'elif'.
+    if thisline =~ '^\s*else\>'
+        :echom thisline
+        let bslnum = s:BlockStarter(a:lnum, '^\s*\(try\|except\|if\|elif\|for\)\>')
         if bslnum > 0
             return indent(bslnum)
         else

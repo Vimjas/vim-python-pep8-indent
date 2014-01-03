@@ -123,6 +123,63 @@ shared_examples_for "vim" do
      end
   end
 
+  describe "when an 'if' is followed by" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>' }
+     it "an elif, it lines up with the 'if'" do
+        vim.feedkeys 'elif y:'
+        indent.should == shiftwidth * 2
+     end
+
+     it "an 'else', it lines up with the 'if'" do
+        vim.feedkeys 'else:'
+        indent.should == shiftwidth * 2
+     end
+  end
+
+  describe "when a 'for' is followed by" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>for x in y:\<CR>' }
+     it "an 'else', it lines up with the 'for'" do
+        vim.feedkeys 'else:'
+        indent.should == shiftwidth * 2
+     end
+  end
+
+  describe "when a 'try' is followed by" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>try:\<CR>' }
+     it "an 'except', it lines up with the 'try'" do
+        vim.feedkeys 'except:'
+        indent.should == shiftwidth * 2
+     end
+
+     it "an 'else', it lines up with the 'try'" do
+        vim.feedkeys 'else:'
+        indent.should == shiftwidth * 2
+     end
+
+     it "a 'finally', it lines up with the 'try'" do
+        vim.feedkeys 'finally:'
+        indent.should == shiftwidth * 2
+     end
+  end
+
+  describe "when an 'except' is followed by" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>except:\<CR>' }
+     it "an 'else', it lines up with the 'except'" do
+        vim.feedkeys 'else:'
+        indent.should == shiftwidth * 2
+     end
+
+     it "another 'except', it lines up with the previous 'except'" do
+        vim.feedkeys 'except:'
+        indent.should == shiftwidth * 2
+     end
+
+     it "a 'finally', it lines up with the 'except'" do
+        vim.feedkeys 'finally:'
+        indent.should == shiftwidth * 2
+     end
+  end
+
   def shiftwidth
     @shiftwidth ||= vim.echo("exists('*shiftwidth') ? shiftwidth() : &sw").to_i
   end
