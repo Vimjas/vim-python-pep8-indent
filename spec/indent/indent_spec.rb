@@ -2,7 +2,16 @@ require "spec_helper"
 
 shared_examples_for "vim" do
 
-  before(:each) { vim.normal 'gg"_dG' }  # clear buffer
+  before(:each) {
+    # clear buffer
+    vim.normal 'gg"_dG'
+
+    # Insert two blank lines.
+    # The first line is a corner case in this plugin that would shadow the
+    # correct behaviour of other tests. Thus we explicitly jump to the first
+    # line when we require so.
+    vim.feedkeys 'i\<CR>\<CR>\<ESC>'
+  }
 
   describe "when using the indent plugin" do
     it "sets the indentexpr and indentkeys options" do
@@ -17,7 +26,7 @@ shared_examples_for "vim" do
   end
 
   describe "when entering the first line" do
-    before { vim.feedkeys 'ipass' }
+    before { vim.feedkeys '0ggipass' }
 
     it "does not indent" do
       proposed_indent.should == 0
