@@ -102,6 +102,25 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when inside an unfinished string" do
+    it "does not indent" do
+      vim.feedkeys 'i"test:\<ESC>'
+      vim.echo('synIDattr(synID(line("."), col("."), 0), "name")'
+              ).downcase.should include 'string'
+      vim.feedkeys 'a\<CR>'
+      proposed_indent.should == 0
+      indent.should == 0
+    end
+
+    it "does not dedent" do
+      vim.feedkeys 'iif True:\<CR>"test:\<ESC>'
+      vim.echo('synIDattr(synID(line("."), col("."), 0), "name")'
+              ).downcase.should include 'string'
+      proposed_indent.should == shiftwidth
+      indent.should == shiftwidth
+    end
+  end
+
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'

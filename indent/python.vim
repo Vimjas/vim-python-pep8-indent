@@ -27,11 +27,10 @@ let s:block_rules = {
 let s:paren_pairs = ['()', '{}', '[]']
 let s:control_statement = '^\s*\(if\|while\|with\|for\|except\)\>'
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
-if v:version >= 704 || (v:version == 703 && has('patch1037'))
-  let s:string_literal = '".\{-}\\\@1<!"\|''.\{-}\\\@1<!'''
-else
-  let s:string_literal = '".\{-}\\\@<!"\|''.\{-}\\\@<!'''
-endif
+
+" Skip strings and comments
+let s:skip = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
+           \ '=~? "string\\|comment"'
 
 " compatibility with vim patch 7.3.629: 'sw' can be set to -1 to follow 'ts'
 if exists('*shiftwidth')
@@ -65,16 +64,13 @@ function! s:find_opening_paren(...)
 
     let stopline = max([0, line('.') - s:maxoff])
 
-    " Skip strings and comments
-    let skip = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-             \ '=~? "string\\|comment"'
-
     " Return if cursor is in a comment or string
-    exe 'if' skip '| return [0, 0] | endif'
+    exe 'if' s:skip '| return [0, 0] | endif'
 
     let positions = []
     for p in s:paren_pairs
-        call add(positions, searchpairpos('\V'.p[0], '', '\V'.p[1], 'bnW', skip, stopline))
+        call add(positions, searchpairpos(
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip, stopline))
     endfor
 
     " Remove empty matches and return the type with the closest match
@@ -174,21 +170,30 @@ endfunction
 
 function! s:indent_like_previous_line(lnum)
     let lnum = prevnonblank(a:lnum - 1)
+
+    " No previous line, keep current indent.
+    if lnum < 1
+      return -1
+    endif
+
     let text = getline(lnum)
     let start = s:find_start_of_multiline_statement(lnum)
     let base = indent(start)
 
-    " Remove string literals.
-    let text = substitute(text, s:string_literal, '', 'g')
+    " Jump to last character in previous line.
+    call cursor(lnum, len(text))
+    let ignore_last_char = eval(s:skip)
 
-    " If the previous line ended with a colon and is not a comment, indent
-    " relative to statement start.
-    if text =~ '^[^#]*:\s*\(#.*\)\?$'
+    " Search for final colon that is not inside a string or comment.
+    while search(':\s*\%(#.*\)\?$', 'bcW', lnum)
+      if eval(s:skip)
+        normal! h
+      else
         return base + s:sw()
-    endif
+      endif
+    endwhile
 
-
-    if text =~ '\\$'
+    if text =~ '\\$' && !ignore_last_char
         " If this line is the continuation of a control statement
         " indent further to distinguish the continuation line
         " from the next logical line.

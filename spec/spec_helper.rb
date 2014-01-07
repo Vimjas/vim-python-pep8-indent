@@ -14,6 +14,7 @@ Vimrunner::RSpec.configure do |config|
     # vim.add_plugin(plugin_path, 'indent/python.vim')
 
     vim.command "set rtp^=#{plugin_path}"
+    vim.command "runtime syntax/python.vim"
     vim.command "runtime indent/python.vim"
 
     vim
