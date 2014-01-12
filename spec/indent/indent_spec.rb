@@ -2,7 +2,16 @@ require "spec_helper"
 
 shared_examples_for "vim" do
 
-  before(:each) { vim.normal 'gg"_dG' }  # clear buffer
+  before(:each) {
+    # clear buffer
+    vim.normal 'gg"_dG'
+
+    # Insert two blank lines.
+    # The first line is a corner case in this plugin that would shadow the
+    # correct behaviour of other tests. Thus we explicitly jump to the first
+    # line when we require so.
+    vim.feedkeys 'i\<CR>\<CR>\<ESC>'
+  }
 
   describe "when using the indent plugin" do
     it "sets the indentexpr and indentkeys options" do
@@ -17,7 +26,7 @@ shared_examples_for "vim" do
   end
 
   describe "when entering the first line" do
-    before { vim.feedkeys 'ipass' }
+    before { vim.feedkeys '0ggipass' }
 
     it "does not indent" do
       proposed_indent.should == 0
@@ -67,6 +76,18 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when after multiple parens of different types" do
+    it "indents by one level" do
+      vim.feedkeys 'if({\<CR>'
+      indent.should == shiftwidth
+    end
+
+    it "lines up with the last paren" do
+      vim.feedkeys 'ifff({123: 456,\<CR>'
+      indent.should == 5
+    end
+  end
+
   describe "when '#' is contained in a string that is followed by a colon" do
     it "indents by one level" do
         vim.feedkeys 'iif "some#thing" == "test":#test\<CR>pass'
@@ -81,11 +102,83 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when inside an unfinished string" do
+    it "does not indent" do
+      vim.feedkeys 'i"test:\<ESC>'
+      vim.echo('synIDattr(synID(line("."), col("."), 0), "name")'
+              ).downcase.should include 'string'
+      vim.feedkeys 'a\<CR>'
+      proposed_indent.should == 0
+      indent.should == 0
+    end
+
+    it "does not dedent" do
+      vim.feedkeys 'iif True:\<CR>"test:\<ESC>'
+      vim.echo('synIDattr(synID(line("."), col("."), 0), "name")'
+              ).downcase.should include 'string'
+      proposed_indent.should == shiftwidth
+      indent.should == shiftwidth
+    end
+  end
+
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'
           indent.should == shiftwidth
       end
+  end
+
+  describe "when writing an 'else' block" do
+    it "aligns to the preceeding 'for' block" do
+      vim.feedkeys 'ifor x in "abc":\<CR>pass\<CR>else:'
+      indent.should == 0
+    end
+
+    it "aligns to the preceeding 'if' block" do
+      vim.feedkeys 'ifor x in "abc":\<CR>if True:\<CR>pass\<CR>else:'
+      indent.should == shiftwidth
+    end
+  end
+
+  describe "when using parens and control statements" do
+    it "avoids ambiguity by using extra indentation" do
+      vim.feedkeys 'iif (111 and\<CR>'
+      if shiftwidth == 4
+        indent.should == shiftwidth * 2
+      else
+        indent.should == 4
+      end
+      vim.feedkeys '222):\<CR>'
+      indent.should == shiftwidth
+      vim.feedkeys 'pass\<CR>'
+      indent.should == 0
+    end
+
+    it "still aligns parens properly if not ambiguous" do
+      vim.feedkeys 'iwhile (111 and\<CR>'
+      indent.should == 7
+      vim.feedkeys '222):\<CR>'
+      indent.should == shiftwidth
+      vim.feedkeys 'pass\<CR>'
+      indent.should == 0
+    end
+
+    it "still handles multiple parens correctly" do
+      vim.feedkeys 'iif (111 and (222 and 333\<CR>'
+      indent.should == 13
+      vim.feedkeys 'and 444\<CR>'
+      indent.should == 13
+      vim.feedkeys ')\<CR>'
+      if shiftwidth == 4
+        indent.should == shiftwidth * 2
+      else
+        indent.should == 4
+      end
+      vim.feedkeys 'and 555):\<CR>'
+      indent.should == shiftwidth
+      vim.feedkeys 'pass\<CR>'
+      indent.should == 0
+    end
   end
 
   describe "when a line breaks with a manual '\\'" do
