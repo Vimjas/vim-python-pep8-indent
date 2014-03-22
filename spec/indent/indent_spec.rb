@@ -216,6 +216,14 @@ shared_examples_for "vim" do
      end
   end
 
+  describe "when current line is dedented compared to the last non-empty line" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>y = True\<CR>\<ESC>\<ESC>' }
+     it "and current line has a valid indentation (Part 1)" do
+        vim.feedkeys '0i\<TAB>if y:'
+        proposed_indent.should == -1
+     end
+  end
+
   describe "when an 'if' is followed by" do
      before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>' }
      it "an elif, it lines up with the 'if'" do
