@@ -179,6 +179,7 @@ function! s:indent_like_previous_line(lnum)
     let text = getline(lnum)
     let start = s:find_start_of_multiline_statement(lnum)
     let base = indent(start)
+    let current = indent(a:lnum)
 
     " Jump to last character in previous line.
     call cursor(lnum, len(text))
@@ -212,6 +213,13 @@ function! s:indent_like_previous_line(lnum)
             return base - s:sw()
         endif
         " Otherwise, trust the user
+        return -1
+    endif
+
+    " If this line is dedented and the number of indent spaces is valid
+    " (multiple of the indentation size), trust the user
+    let dedent_size = current - base
+    if dedent_size < 0 && current % s:sw() == 0
         return -1
     endif
 

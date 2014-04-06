@@ -199,7 +199,7 @@ shared_examples_for "vim" do
   end
 
   describe "when current line is dedented compared to previous line" do
-     before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>return True\<CR>\<ESC>' }
+     before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>y = True\<CR>\<ESC>' }
      it "and current line has a valid indentation (Part 1)" do
         vim.feedkeys '0i\<TAB>if y:'
         proposed_indent.should == -1
@@ -213,6 +213,14 @@ shared_examples_for "vim" do
      it "and current line has an invalid indentation" do
         vim.feedkeys 'i    while True:\<CR>'
         indent.should == previous_indent + shiftwidth
+     end
+  end
+
+  describe "when current line is dedented compared to the last non-empty line" do
+     before { vim.feedkeys 'i\<TAB>\<TAB>if x:\<CR>y = True\<CR>\<CR>\<ESC>' }
+     it "and current line has a valid indentation" do
+        vim.feedkeys '0i\<TAB>if y:'
+        proposed_indent.should == -1
      end
   end
 
