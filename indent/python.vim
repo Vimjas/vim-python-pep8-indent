@@ -16,6 +16,9 @@ setlocal nolisp
 setlocal autoindent
 setlocal indentexpr=GetPythonPEPIndent(v:lnum)
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},=elif,=except
+setlocal tabstop=4
+setlocal softtabstop=4
+setlocal shiftwidth=4
 
 let s:maxoff = 50
 let s:block_rules = {
