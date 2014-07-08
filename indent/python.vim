@@ -32,8 +32,11 @@ let s:control_statement = '^\s*\(if\|while\|with\|for\|except\)\>'
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
 " Skip strings and comments
-let s:skip = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
+let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
            \ '=~? "string\\|comment"'
+
+let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
+           \ '=~? "comment"'
 
 " compatibility with vim patch 7.3.629: 'sw' can be set to -1 to follow 'ts'
 if exists('*shiftwidth')
@@ -68,12 +71,12 @@ function! s:find_opening_paren(...)
     let stopline = max([0, line('.') - s:maxoff])
 
     " Return if cursor is in a comment or string
-    exe 'if' s:skip '| return [0, 0] | endif'
+    exe 'if' s:skip_search '| return [0, 0] | endif'
 
     let positions = []
     for p in s:paren_pairs
         call add(positions, searchpairpos(
-           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip, stopline))
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline))
     endfor
 
     " Remove empty matches and return the type with the closest match
@@ -186,11 +189,11 @@ function! s:indent_like_previous_line(lnum)
 
     " Jump to last character in previous line.
     call cursor(lnum, len(text))
-    let ignore_last_char = eval(s:skip)
+    let ignore_last_char = eval(s:skip_special_chars)
 
     " Search for final colon that is not inside a string or comment.
     while search(':\s*\%(#.*\)\?$', 'bcW', lnum)
-      if eval(s:skip)
+      if eval(s:skip_special_chars)
         normal! h
       else
         return base + s:sw()

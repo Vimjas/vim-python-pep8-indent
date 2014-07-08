@@ -76,6 +76,14 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when using gq to reindent a '(' that is" do
+    before { vim.feedkeys 'itest(' }
+    it "something and has a string without spaces at the end" do
+      vim.feedkeys 'something_very_long_blaaaaaaaaa, "some_very_long_string_blaaaaaaaaaaaaaaaaaaaa"\<esc>gqq'
+      indent.should == 5
+    end
+  end
+
   describe "when after multiple parens of different types" do
     it "indents by one level" do
       vim.feedkeys 'if({\<CR>'
