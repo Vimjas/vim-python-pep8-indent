@@ -6,6 +6,7 @@ Credits
 It is currently maintained by Hynek Schlawack with the generous help of the following contributors:
 
 - 0player
+- Bryan Bennett
 - Clay Gerrard
 - Hassan Kibirige
 - Jelte Fennema
