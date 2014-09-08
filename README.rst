@@ -76,7 +76,7 @@ Even more unfortunately, I wasn’t able to reach any of the original authors/ma
 So I fixed the annoyance it with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
 The original patch is still available here_.
 
-I’d like to thank the original authors here for their work and release it hereby to the *Public Domain* (using the CC0 licence) since I hope that would be in their spirit.
+I’d like to thank the original authors here for their work and release it hereby to the *Public Domain* (using the CC0_ licence) since I hope that would be in their spirit.
 If anyone with a say in this objects, please let me_ know immediately.
 Also, if someone is in contact with one of them, I would appreciate being introduced.
 
@@ -95,3 +95,4 @@ This mainly means that I’ll triage through bugs and pull requests but won’t 
 .. _`Vimscript`: http://learnvimscriptthehardway.stevelosh.com/
 .. _vundle: https://github.com/gmarik/Vundle.vim
 .. _me: https://hynek.me/
+.. _CC0: http://creativecommons.org/publicdomain/zero/1.0/

@@ -3,7 +3,19 @@
 " Maintainer:       Hynek Schlawack <hs@ox.cx>
 " Prev Maintainer:  Eric Mc Sween <em@tomcom.de> (address invalid)
 " Original Author:  David Bustos <bustos@caltech.edu> (address invalid)
-" License:          Public Domain
+" License:          CC0
+"
+" vim-python-pep8-indent - A nicer Python indentation style for vim.
+" Written in 2004 by David Bustos <bustos@caltech.edu>
+" Maintained from 2004-2005 by Eric Mc Sween <em@tomcom.de>
+" Maintained from 2013 by Hynek Schlawack <hs@ox.cx>
+"
+" To the extent possible under law, the author(s) have dedicated all copyright
+" and related and neighboring rights to this software to the public domain
+" worldwide. This software is distributed without any warranty.
+" You should have received a copy of the CC0 Public Domain Dedication along
+" with this software. If not, see
+" <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 " Only load this indent file when no other was loaded.
 if exists("b:did_indent")
