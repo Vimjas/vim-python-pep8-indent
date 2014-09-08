@@ -34,7 +34,7 @@ Follow the instructions on installing Pathogen_ and then:
 
 
 Vundle
-######
+^^^^^^
 
 Follow the instructions on installing Vundle_ and add the appropriate plugin line into your ``.vimrc``:
 
@@ -44,7 +44,7 @@ Follow the instructions on installing Vundle_ and add the appropriate plugin lin
 
 
 NeoBundle
-#########
+^^^^^^^^^
 
 Follow the instructions on installing NeoBundle_ and add the appropriate NeoBundle line into your ``.vimrc``:
 
@@ -68,13 +68,15 @@ License and Authorship
 ----------------------
 
 This script is based on one from vim’s official `script repo`_  that was *not* originally written by me.
-Unfortunately the indentation was off by one character in one case and hasn’t been updated since 2005.
+Unfortunately the indentation was off by one character in one case and the script hasn’t been updated since 2005.
 
 Even more unfortunately, I wasn’t able to reach any of the original authors/maintainers:
 **David Bustos** and **Eric Mc Sween**.
 
 So I fixed the annoyance it with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
 The original patch is still available here_.
+
+Over the time a lot more improvements have been contributed_ by `generous people`_.
 
 I’d like to thank the original authors here for their work and release it hereby to the *Public Domain* (using the CC0_ licence) since I hope that would be in their spirit.
 If anyone with a say in this objects, please let me_ know immediately.
@@ -96,3 +98,5 @@ This mainly means that I’ll triage through bugs and pull requests but won’t 
 .. _vundle: https://github.com/gmarik/Vundle.vim
 .. _me: https://hynek.me/
 .. _CC0: http://creativecommons.org/publicdomain/zero/1.0/
+.. _contributed: https://github.com/hynek/vim-python-pep8-indent/blob/master/CONTRIBUTING.rst
+.. _`generous people`: https://github.com/hynek/vim-python-pep8-indent/blob/master/AUTHORS.rst
