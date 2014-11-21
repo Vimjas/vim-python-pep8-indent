@@ -8,7 +8,7 @@ This small script modifies vim_’s indentation behavior to comply with PEP8_ an
 Most importantly::
 
    foobar(foo,
-         bar)
+          bar)
 
 and::
 
