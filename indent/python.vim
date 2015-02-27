@@ -50,7 +50,8 @@ let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
 let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
            \ '=~? "comment"'
 
-" compatibility with vim patch 7.3.629: 'sw' can be set to -1 to follow 'ts'
+" Use 'shiftwidth()' instead of '&sw'.
+" (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
 if exists('*shiftwidth')
     function! s:sw()
         return shiftwidth()
