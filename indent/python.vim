@@ -245,10 +245,31 @@ function! s:indent_like_previous_line(lnum)
     return base
 endfunction
 
+" Is the syntax at lnum (and optionally cnum) a python string?
+function! s:is_python_string(lnum, ...)
+    let line = getline(a:lnum)
+    let linelen = len(line)
+    if linelen < 1
+      return 0
+    endif
+    let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
+    for cnum in cols
+        if index(map(synstack(a:lnum, cnum),
+                    \ 'synIDattr(v:val,"name")'), 'pythonString') == -1
+            return 0
+        end
+    endfor
+    return 1
+endfunction
+
 function! GetPythonPEPIndent(lnum)
 
     " First line has indent 0
     if a:lnum == 1
+        return 0
+    endif
+
+    if s:is_python_string(a:lnum) && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
         return 0
     endif
 

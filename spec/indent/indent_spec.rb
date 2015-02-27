@@ -129,6 +129,22 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when after an '(' that is followed by an unfinished string" do
+    before { vim.feedkeys 'itest("""' }
+
+    it "it indents the next line" do
+      vim.feedkeys '\<CR>'
+      proposed_indent.should == 5
+      indent.should == 5
+    end
+
+    it "with contents it indents the next line" do
+      vim.feedkeys 'string_contents\<CR>'
+      proposed_indent.should == 5
+      indent.should == 5
+    end
+  end
+
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'
