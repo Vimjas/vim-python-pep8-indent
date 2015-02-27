@@ -246,11 +246,46 @@ function! s:indent_like_previous_line(lnum)
     return base
 endfunction
 
+" Is the syntax at lnum (and optionally cnum) a python string?
+function! s:is_python_string(lnum, ...)
+    let line = getline(a:lnum)
+    let linelen = len(line)
+    if linelen < 1
+      let linelen = 1
+    endif
+    let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
+    for cnum in cols
+        if match(map(synstack(a:lnum, cnum),
+                    \ 'synIDattr(v:val,"name")'), 'python\S*String') == -1
+            return 0
+        end
+    endfor
+    return 1
+endfunction
+
 function! GetPythonPEPIndent(lnum)
 
     " First line has indent 0
     if a:lnum == 1
         return 0
+    endif
+
+    " Multilinestrings: continous, docstring or starting.
+    if s:is_python_string(a:lnum)
+        if s:is_python_string(a:lnum-1)
+            " Previous line is (completely) a string.
+            return s:indent_like_previous_line(a:lnum)
+        endif
+
+        if match(getline(a:lnum-1), '^\s*\%("""\|''''''\)') != -1
+            " docstring.
+            return s:indent_like_previous_line(a:lnum)
+        endif
+
+        if s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+            " String started in previous line.
+            return 0
+        endif
     endif
 
     " Parens: If we can find an open parenthesis/bracket/brace, line up with it.
