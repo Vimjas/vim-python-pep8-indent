@@ -250,7 +250,7 @@ function! s:is_python_string(lnum, ...)
     let line = getline(a:lnum)
     let linelen = len(line)
     if linelen < 1
-      return 0
+      let linelen = 1
     endif
     let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
     for cnum in cols
@@ -269,8 +269,18 @@ function! GetPythonPEPIndent(lnum)
         return 0
     endif
 
-    if (len(getline(a:lnum)) == 0 || s:is_python_string(a:lnum))
-          \ && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+    " Multilinestrings: continous, docstring or starting.
+    if s:is_python_string(a:lnum)
+        if s:is_python_string(a:lnum-1)
+            " Previous line is (completely) a string.
+            return s:indent_like_previous_line(a:lnum)
+        endif
+
+        if match(getline(a:lnum-1), '^\s*"""') != -1
+            " docstring.
+            return s:indent_like_previous_line(a:lnum)
+        endif
+
         return 0
     endif
 
