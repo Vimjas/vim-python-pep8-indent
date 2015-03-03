@@ -34,21 +34,21 @@ setlocal shiftwidth=4
 
 let s:maxoff = 50
 let s:block_rules = {
-  \ '^\s*elif\>': ['if', 'elif'],
-  \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
-  \ '^\s*except\>': ['try', 'except'],
-  \ '^\s*finally\>': ['try', 'except', 'else']
-  \ }
+            \ '^\s*elif\>': ['if', 'elif'],
+            \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
+            \ '^\s*except\>': ['try', 'except'],
+            \ '^\s*finally\>': ['try', 'except', 'else']
+            \ }
 let s:paren_pairs = ['()', '{}', '[]']
 let s:control_statement = '^\s*\(if\|while\|with\|for\|except\)\>'
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
 " Skip strings and comments
 let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-           \ '=~? "string\\|comment"'
+            \ '=~? "string\\|comment"'
 
 let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-           \ '=~? "comment"'
+            \ '=~? "comment"'
 
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
