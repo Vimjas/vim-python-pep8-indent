@@ -276,12 +276,15 @@ function! GetPythonPEPIndent(lnum)
             return s:indent_like_previous_line(a:lnum)
         endif
 
-        if match(getline(a:lnum-1), '^\s*"""') != -1
+        if match(getline(a:lnum-1), '^\s*\%("""\|''''''\)') != -1
             " docstring.
             return s:indent_like_previous_line(a:lnum)
         endif
 
-        return 0
+        if s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+            " String started in previous line.
+            return 0
+        endif
     endif
 
     " Parens: If we can find an open parenthesis/bracket/brace, line up with it.

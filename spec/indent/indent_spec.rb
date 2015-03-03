@@ -181,6 +181,16 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when after a docstring" do
+    before { vim.feedkeys 'i    """' }
+
+    it "it does indent the next line" do
+      vim.feedkeys '\<CR>'
+      proposed_indent.should == 4
+      indent.should == 4
+    end
+  end
+
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'
