@@ -269,7 +269,8 @@ function! GetPythonPEPIndent(lnum)
         return 0
     endif
 
-    if s:is_python_string(a:lnum) && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+    if (len(getline(a:lnum)) == 0 || s:is_python_string(a:lnum))
+          \ && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
         return 0
     endif
 

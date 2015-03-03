@@ -132,16 +132,52 @@ shared_examples_for "vim" do
   describe "when after an '(' that is followed by an unfinished string" do
     before { vim.feedkeys 'itest("""' }
 
-    it "it indents the next line" do
+    it "it does not indent the next line" do
       vim.feedkeys '\<CR>'
-      proposed_indent.should == 5
-      indent.should == 5
+      proposed_indent.should == 0
+      indent.should == 0
     end
 
-    it "with contents it indents the next line" do
+    it "with contents it does not indent the next line" do
       vim.feedkeys 'string_contents\<CR>'
-      proposed_indent.should == 5
-      indent.should == 5
+      proposed_indent.should == 0
+      indent.should == 0
+    end
+  end
+
+  describe "when after assigning an unfinished string" do
+    before { vim.feedkeys 'itest = """' }
+
+    it "it does not indent the next line" do
+      vim.feedkeys '\<CR>'
+      proposed_indent.should == 0
+      indent.should == 0
+    end
+  end
+
+  describe "when after assigning an unfinished string" do
+    before { vim.feedkeys 'i    test = """' }
+
+    it "it does not indent the next line" do
+      vim.feedkeys '\<CR>'
+      proposed_indent.should == 0
+      indent.should == 0
+    end
+  end
+
+  describe "when after assigning a finished string" do
+    before { vim.feedkeys 'i    test = ""' }
+
+    it "it does indent the next line" do
+      vim.feedkeys '\<CR>'
+      proposed_indent.should == 4
+      indent.should == 4
+    end
+
+    it "and writing a new string, it does indent the next line" do
+      vim.feedkeys '\<CR>""'
+      proposed_indent.should == 4
+      indent.should == 4
     end
   end
 
