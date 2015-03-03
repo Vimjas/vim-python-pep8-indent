@@ -254,8 +254,8 @@ function! s:is_python_string(lnum, ...)
     endif
     let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
     for cnum in cols
-        if index(map(synstack(a:lnum, cnum),
-                    \ 'synIDattr(v:val,"name")'), 'pythonString') == -1
+        if match(map(synstack(a:lnum, cnum),
+                    \ 'synIDattr(v:val,"name")'), 'python\S*String') == -1
             return 0
         end
     endfor
