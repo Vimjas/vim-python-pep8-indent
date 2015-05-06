@@ -83,7 +83,7 @@ function! s:find_opening_paren(...)
 
     let stopline = max([0, line('.') - s:maxoff])
 
-    " Return if cursor is in a comment or string
+    " Return if cursor is in a comment.
     exe 'if' s:skip_search '| return [0, 0] | endif'
 
     let positions = []
