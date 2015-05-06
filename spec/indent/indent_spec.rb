@@ -198,6 +198,20 @@ shared_examples_for "vim" do
       end
   end
 
+  describe "when using a function definition" do
+      it "indents shiftwidth spaces" do
+          vim.feedkeys 'idef long_function_name(\<CR>arg'
+          indent.should == shiftwidth * 2
+      end
+  end
+
+  describe "when using a class definition" do
+      it "indents shiftwidth spaces" do
+          vim.feedkeys 'iclass Foo(\<CR>'
+          indent.should == shiftwidth * 2
+      end
+  end
+
   describe "when writing an 'else' block" do
     it "aligns to the preceeding 'for' block" do
       vim.feedkeys 'ifor x in "abc":\<CR>pass\<CR>else:'
