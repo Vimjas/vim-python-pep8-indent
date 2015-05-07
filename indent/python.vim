@@ -40,7 +40,7 @@ let s:block_rules = {
             \ '^\s*finally\>': ['try', 'except', 'else']
             \ }
 let s:paren_pairs = ['()', '{}', '[]']
-let s:control_statement = '^\s*\(if\|while\|with\|for\|except\)\>'
+let s:control_statement = '^\s*\(class\|def\|if\|while\|with\|for\|except\)\>'
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
 " Skip strings and comments
