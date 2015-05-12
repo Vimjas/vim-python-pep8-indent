@@ -76,6 +76,21 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when after an '{' that is followed by a comment" do
+    before { vim.feedkeys 'imydict = {  # comment\<CR>' }
+
+    it "indent by one level" do
+      indent.should == shiftwidth
+      vim.feedkeys '1: 1,\<CR>'
+      indent.should == shiftwidth
+    end
+
+    it "lines up the closing parenthesis" do
+      vim.feedkeys '}'
+      indent.should == 0
+    end
+  end
+
   describe "when using gq to reindent a '(' that is" do
     before { vim.feedkeys 'itest(' }
     it "something and has a string without spaces at the end" do
@@ -126,6 +141,15 @@ shared_examples_for "vim" do
               ).downcase.should include 'string'
       proposed_indent.should == shiftwidth
       indent.should == shiftwidth
+    end
+  end
+
+  describe "when the previous line has a colon in a string" do
+    before { vim.feedkeys 'itest(":".join(["1","2"]))\<CR>' }
+    it "does not indent" do
+      vim.feedkeys 'if True:'
+      indent.should == 0
+      proposed_indent.should == 0
     end
   end
 
@@ -372,6 +396,20 @@ shared_examples_for "vim" do
         vim.feedkeys 'finally:'
         indent.should == shiftwidth * 2
      end
+  end
+
+  describe "when jedi-vim call signatures are used" do
+    before { vim.command 'syn match jediFunction "JEDI_CALL_SIGNATURE" keepend extend' }
+
+    it "ignores the call signature after a colon" do
+      vim.feedkeys 'iif True:  JEDI_CALL_SIGNATURE\<CR>'
+      indent.should == shiftwidth
+    end
+
+    it "ignores the call signature after a function" do
+      vim.feedkeys 'idef f(  JEDI_CALL_SIGNATURE\<CR>'
+      indent.should == shiftwidth * 2
+    end
   end
 
   def shiftwidth

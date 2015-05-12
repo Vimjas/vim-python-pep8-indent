@@ -43,9 +43,25 @@ let s:paren_pairs = ['()', '{}', '[]']
 let s:control_statement = '^\s*\(class\|def\|if\|while\|with\|for\|except\)\>'
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
-" Skip strings and comments
+" Skip strings and comments. Return 1 for chars to skip.
+" jedi* refers to syntax definitions from jedi-vim for call signatures, which
+" are inserted temporarily into the buffer.
 let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "string\\|comment"'
+            \ '=~? "\\vstring|comment|jedi\\S"'
+
+let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
+            \ '=~? "\\vcomment|jedi\\S"'
+
+" Also ignore anything concealed.
+" Wrapper around synconcealed for older Vim (7.3.429, used on Travis CI).
+function! s:is_concealed(line, col)
+    let concealed = synconcealed(a:line, a:col)
+    return len(concealed) && concealed[0]
+endfunction
+if has('conceal')
+    let s:skip_special_chars .= '|| s:is_concealed(line("."), col("."))'
+endif
+
 
 let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "comment"'
@@ -134,6 +150,27 @@ function! s:find_start_of_block(lnum, types)
     return 0
 endfunction
 
+" Is "expr" true for every position in "lnum", beginning at "start"?
+" (optionally up to a:1 / 4th argument)
+function! s:match_expr_on_line(expr, lnum, start, ...)
+    let text = getline(a:lnum)
+    let end = a:0 ? a:1 : len(text)
+    if a:start > end
+        return 1
+    endif
+    let save_pos = getpos('.')
+    let r = 1
+    for i in range(a:start, end)
+        call cursor(a:lnum, i)
+        if !(eval(a:expr) || text[i-1] =~ '\s')
+            let r = 0
+            break
+        endif
+    endfor
+    call setpos('.', save_pos)
+    return r
+endfunction
+
 " Line up with open parenthesis/bracket/brace.
 function! s:indent_like_opening_paren(lnum)
     let [paren_lnum, paren_col] = s:find_opening_paren(a:lnum)
@@ -143,7 +180,8 @@ function! s:indent_like_opening_paren(lnum)
     let text = getline(paren_lnum)
     let base = indent(paren_lnum)
 
-    let nothing_after_opening_paren = text =~ '\%'.(paren_col + 1).'c\s*$'
+    let nothing_after_opening_paren = s:match_expr_on_line(
+                \ s:skip_after_opening_paren, paren_lnum, paren_col+1)
     let starts_with_closing_paren = getline(a:lnum) =~ '^\s*[])}]'
 
     if nothing_after_opening_paren
@@ -204,13 +242,18 @@ function! s:indent_like_previous_line(lnum)
     call cursor(lnum, len(text))
     let ignore_last_char = eval(s:skip_special_chars)
 
-    " Search for final colon that is not inside a string or comment.
-    while search(':\s*\%(#.*\)\?$', 'bcW', lnum)
-      if eval(s:skip_special_chars)
+    " Search for final colon that is not inside something to be ignored.
+    while search(':', 'bcW', lnum)
+        let curpos = getpos(".")[2]
+        if curpos == 1 | break | endif
+        if eval(s:skip_special_chars)
+            normal! h
+            continue
+        endif
+        if !s:match_expr_on_line(s:skip_special_chars, lnum, curpos)
+            return base + s:sw()
+        endif
         normal! h
-      else
-        return base + s:sw()
-      endif
     endwhile
 
     if text =~ '\\$' && !ignore_last_char
