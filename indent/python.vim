@@ -243,17 +243,16 @@ function! s:indent_like_previous_line(lnum)
     let ignore_last_char = eval(s:skip_special_chars)
 
     " Search for final colon that is not inside something to be ignored.
-    while search(':', 'bcW', lnum)
+    while 1
         let curpos = getpos(".")[2]
         if curpos == 1 | break | endif
-        if eval(s:skip_special_chars)
+        if eval(s:skip_special_chars) || text[curpos-1] =~ '\s'
             normal! h
             continue
-        endif
-        if !s:match_expr_on_line(s:skip_special_chars, lnum, curpos)
+        elseif text[curpos-1] == ':'
             return base + s:sw()
         endif
-        normal! h
+        break
     endwhile
 
     if text =~ '\\$' && !ignore_last_char
