@@ -153,6 +153,14 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when the previous line has a list slice" do
+    it "does not indent" do
+      vim.feedkeys 'ib = a[2:]\<CR>'
+      indent.should == 0
+      proposed_indent.should == 0
+    end
+  end
+
   describe "when after an '(' that is followed by an unfinished string" do
     before { vim.feedkeys 'itest("""' }
 
