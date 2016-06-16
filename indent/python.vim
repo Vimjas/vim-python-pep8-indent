@@ -40,7 +40,11 @@ let s:block_rules = {
             \ '^\s*finally\>': ['try', 'except', 'else']
             \ }
 let s:paren_pairs = ['()', '{}', '[]']
-let s:control_statement = '^\s*\(class\|def\|if\|while\|with\|for\|except\)\>'
+if &ft == 'pyrex' || &ft == 'cython'
+    let b:control_statement = '\v^\s*(class|def|if|while|with|for|except|cdef|cpdef)>'
+else
+    let b:control_statement = '\v^\s*(class|def|if|while|with|for|except)>'
+endif
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
 " Skip strings and comments. Return 1 for chars to skip.
@@ -198,7 +202,7 @@ function! s:indent_like_opening_paren(lnum)
     " If this line is the continuation of a control statement
     " indent further to distinguish the continuation line
     " from the next logical line.
-    if text =~# s:control_statement && res == base + s:sw()
+    if text =~# b:control_statement && res == base + s:sw()
         return base + s:sw() * 2
     else
         return res
@@ -259,7 +263,7 @@ function! s:indent_like_previous_line(lnum)
         " If this line is the continuation of a control statement
         " indent further to distinguish the continuation line
         " from the next logical line.
-        if getline(start) =~# s:control_statement
+        if getline(start) =~# b:control_statement
             return base + s:sw() * 2
         endif
 
