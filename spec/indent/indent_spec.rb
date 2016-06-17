@@ -457,3 +457,35 @@ describe "vim when using width of 8" do
 
   it_behaves_like "vim"
 end
+
+describe "vim for cython" do
+  before {
+    vim.command "enew"
+    vim.command "set ft=cython"
+    vim.command "runtime indent/python.vim"
+  }
+
+  def shiftwidth
+    @shiftwidth ||= vim.echo("exists('*shiftwidth') ? shiftwidth() : &sw").to_i
+  end
+  def tabstop
+    @tabstop ||= vim.echo("&tabstop").to_i
+  end
+  def indent
+    vim.echo("indent('.')").to_i
+  end
+
+  describe "when using a cdef function definition" do
+      it "indents shiftwidth spaces" do
+          vim.feedkeys 'icdef long_function_name(\<CR>arg'
+          indent.should == shiftwidth * 2
+      end
+  end
+
+  describe "when using a cpdef function definition" do
+      it "indents shiftwidth spaces" do
+          vim.feedkeys 'icpdef long_function_name(\<CR>arg'
+          indent.should == shiftwidth * 2
+      end
+  end
+end
