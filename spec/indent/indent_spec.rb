@@ -29,8 +29,8 @@ shared_examples_for "vim" do
     before { vim.feedkeys '0ggipass' }
 
     it "does not indent" do
-      proposed_indent.should == 0
       indent.should == 0
+      proposed_indent.should == 0
     end
 
     it "does not indent when using '=='" do
@@ -164,36 +164,36 @@ shared_examples_for "vim" do
   describe "when after an '(' that is followed by an unfinished string" do
     before { vim.feedkeys 'itest("""' }
 
-    it "it does not indent the next line" do
+    it "it indents the next line" do
       vim.feedkeys '\<CR>'
-      proposed_indent.should == 0
-      indent.should == 0
+      proposed_indent.should == shiftwidth
+      indent.should == shiftwidth
     end
 
-    it "with contents it does not indent the next line" do
-      vim.feedkeys 'string_contents\<CR>'
-      proposed_indent.should == 0
-      indent.should == 0
+    it "with contents it indents the second line to the parenthesis" do
+      vim.feedkeys 'second line\<CR>'
+      proposed_indent.should == 5
+      indent.should == 5
     end
   end
 
   describe "when after assigning an unfinished string" do
     before { vim.feedkeys 'itest = """' }
 
-    it "it does not indent the next line" do
+    it "it indents the next line" do
       vim.feedkeys '\<CR>'
-      proposed_indent.should == 0
-      indent.should == 0
+      proposed_indent.should == shiftwidth
+      indent.should == shiftwidth
     end
   end
 
   describe "when after assigning an unfinished string" do
     before { vim.feedkeys 'i    test = """' }
 
-    it "it does not indent the next line" do
+    it "it indents the next line" do
       vim.feedkeys '\<CR>'
-      proposed_indent.should == 0
-      indent.should == 0
+      indent.should == shiftwidth + 4
+      proposed_indent.should == shiftwidth + 4
     end
   end
 
@@ -202,13 +202,11 @@ shared_examples_for "vim" do
 
     it "it does indent the next line" do
       vim.feedkeys '\<CR>'
-      proposed_indent.should == 4
       indent.should == 4
     end
 
     it "and writing a new string, it does indent the next line" do
       vim.feedkeys '\<CR>""'
-      proposed_indent.should == 4
       indent.should == 4
     end
   end
@@ -218,8 +216,8 @@ shared_examples_for "vim" do
 
     it "it does indent the next line" do
       vim.feedkeys '\<CR>'
-      proposed_indent.should == 4
       indent.should == 4
+      proposed_indent.should == 4
     end
   end
 

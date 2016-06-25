@@ -248,6 +248,14 @@ function! s:indent_like_block(lnum)
     return -2
 endfunction
 
+function! s:indent_prevnonblank(lnum)
+    let lnum = prevnonblank(a:lnum - 1)
+    if lnum < 1
+      return indent(a:lnum)
+    endif
+    return indent(lnum)
+endfunction
+
 function! s:indent_like_previous_line(lnum)
     let lnum = prevnonblank(a:lnum - 1)
 
@@ -333,27 +341,30 @@ function! s:is_python_string(lnum, ...)
 endfunction
 
 function! GetPythonPEPIndent(lnum)
-
     " First line has indent 0
     if a:lnum == 1
         return 0
     endif
 
     " Multilinestrings: continous, docstring or starting.
-    if s:is_python_string(a:lnum)
+    if s:is_python_string(a:lnum, 1)
         if s:is_python_string(a:lnum-1)
             " Previous line is (completely) a string.
-            return s:indent_like_previous_line(a:lnum)
+            return s:indent_prevnonblank(a:lnum)
         endif
 
         if match(getline(a:lnum-1), '^\s*\%("""\|''''''\)') != -1
             " docstring.
-            return s:indent_like_previous_line(a:lnum)
+            return s:indent_prevnonblank(a:lnum)
+        endif
+
+        if match(getline(a:lnum-1), '\v%("""|'''''')$') != -1
+            " Opening multiline string, started in previous line.
+            return s:indent_prevnonblank(a:lnum) + s:sw()
         endif
 
         if s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
-            " String started in previous line.
-            return 0
+            return s:indent_like_opening_paren(a:lnum)
         endif
     endif
 
