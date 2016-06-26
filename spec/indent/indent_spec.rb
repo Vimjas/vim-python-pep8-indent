@@ -461,15 +461,13 @@ describe "vim when using width of 4" do
   before {
     vim.command("set sw=4 ts=4 sts=4 et")
   }
-
   it_behaves_like "vim"
 end
 
-describe "vim when using width of 8" do
+describe "vim when using width of 3" do
   before {
-    vim.command("set sw=8 ts=8 sts=8 et")
+    vim.command("set sw=3 ts=3 sts=3 et")
   }
-
   it_behaves_like "vim"
 end
 
