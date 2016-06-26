@@ -353,6 +353,23 @@ shared_examples_for "vim" do
      end
   end
 
+  describe "when an 'if' contains a try-except" do
+     before {
+       vim.feedkeys 'iif x:\<CR>try:\<CR>pass\<CR>except:\<CR>pass\<CR>'
+       indent.should == shiftwidth
+     }
+     it "an 'else' should be indented to the try" do
+       vim.feedkeys 'else:'
+       indent.should == shiftwidth
+       proposed_indent.should == shiftwidth
+     end
+     it "an 'else' should keep the indent of the 'if'" do
+       vim.feedkeys 'else:\<ESC><<'
+       indent.should == 0
+       proposed_indent.should == 0
+     end
+  end
+
   describe "when a 'for' is followed by" do
      before { vim.feedkeys 'i\<TAB>\<TAB>for x in y:\<CR>' }
      it "an 'else', it lines up with the 'for'" do
