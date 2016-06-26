@@ -22,6 +22,27 @@ Vimrunner::RSpec.configure do |config|
     vim.command "runtime syntax/python.vim"
     vim.command "runtime indent/python.vim"
 
+    def shiftwidth
+      @shiftwidth ||= vim.echo("exists('*shiftwidth') ? shiftwidth() : &sw").to_i
+    end
+    def tabstop
+      @tabstop ||= vim.echo("&tabstop").to_i
+    end
+    def indent
+      vim.echo("indent('.')").to_i
+    end
+    def previous_indent
+      pline = vim.echo("line('.')").to_i - 1
+      vim.echo("indent('#{pline}')").to_i
+    end
+    def proposed_indent
+      line = vim.echo("line('.')")
+      col = vim.echo("col('.')")
+      indent_value = vim.echo("GetPythonPEPIndent(line('.'))").to_i
+      vim.command("call cursor(#{line}, #{col})")
+      return indent_value
+    end
+
     vim
   end
 end
