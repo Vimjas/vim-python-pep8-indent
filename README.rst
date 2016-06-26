@@ -4,7 +4,8 @@ vim-python-pep8-indent
 .. image:: https://travis-ci.org/hynek/vim-python-pep8-indent.png?branch=travis
    :target: https://travis-ci.org/hynek/vim-python-pep8-indent
 
-This small script modifies vim_’s indentation behavior to comply with PEP8_ and my aesthetic preferences.
+This small script modifies vim_’s indentation behavior to comply with PEP8_ and
+my aesthetic preferences.
 Most importantly::
 
    foobar(foo,
@@ -21,7 +22,6 @@ and::
 Installation
 ------------
 
-
 Pathogen
 ^^^^^^^^
 
@@ -36,7 +36,8 @@ Follow the instructions on installing Pathogen_ and then:
 Vundle
 ^^^^^^
 
-Follow the instructions on installing Vundle_ and add the appropriate plugin line into your ``.vimrc``:
+Follow the instructions on installing Vundle_ and add the appropriate plugin
+line into your ``.vimrc``:
 
 .. code-block:: vim
 
@@ -46,7 +47,8 @@ Follow the instructions on installing Vundle_ and add the appropriate plugin lin
 NeoBundle
 ^^^^^^^^^
 
-Follow the instructions on installing NeoBundle_ and add the appropriate NeoBundle line into your ``.vimrc``:
+Follow the instructions on installing NeoBundle_ and add the appropriate
+NeoBundle line into your ``.vimrc``:
 
 .. code-block:: vim
 
@@ -56,8 +58,10 @@ Follow the instructions on installing NeoBundle_ and add the appropriate NeoBund
 Notes
 -----
 
-Please note that Kirill Klenov’s python-mode_ ships its own version of this bundle.
-Therefore, if you want to use this version specifically, you’ll have to disable python-mode’s using:
+Please note that Kirill Klenov’s python-mode_ ships its own version of this
+bundle.
+Therefore, if you want to use this version specifically, you’ll have to disable
+python-mode’s using:
 
 .. code-block:: vim
 
@@ -67,23 +71,31 @@ Therefore, if you want to use this version specifically, you’ll have to disabl
 License and Authorship
 ----------------------
 
-This script is based on one from vim’s official `script repo`_  that was *not* originally written by me.
-Unfortunately the indentation was off by one character in one case and the script hasn’t been updated since 2005.
+This script is based on one from vim’s official `script repo`_  that was *not*
+originally written by me.
+Unfortunately the indentation was off by one character in one case and the
+script hasn’t been updated since 2005.
 
-Even more unfortunately, I wasn’t able to reach any of the original authors/maintainers:
-**David Bustos** and **Eric Mc Sween**.
+Even more unfortunately, I wasn’t able to reach any of the original
+authors/maintainers: **David Bustos** and **Eric Mc Sween**.
 
-So I fixed the annoyance it with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
+So I fixed the annoyance with the help of `Steve Losh`_ and am putting it out
+here so you don’t have to patch the original yourself.
 The original patch is still available here_.
 
-Over the time a lot more improvements have been contributed_ by `generous people`_.
+Over the time a lot more improvements have been contributed_ by `generous
+people`_.
 
-I’d like to thank the original authors here for their work and release it hereby to the *Public Domain* (using the CC0_ licence) since I hope that would be in their spirit.
+I’d like to thank the original authors here for their work and release it
+hereby to the *Public Domain* (using the CC0_ licence) since I hope that would
+be in their spirit.
 If anyone with a say in this objects, please let me_ know immediately.
-Also, if someone is in contact with one of them, I would appreciate being introduced.
+Also, if someone is in contact with one of them, I would appreciate being
+introduced.
 
 While my Vimscript_ skills are still feeble, I intend to maintain it for now.
-This mainly means that I’ll triage through bugs and pull requests but won’t be fixing much myself.
+This mainly means that I’ll triage through bugs and pull requests but won’t be
+fixing much myself.
 
 
 .. _vim: http://www.vim.org/
