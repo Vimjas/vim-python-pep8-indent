@@ -161,66 +161,6 @@ shared_examples_for "vim" do
     end
   end
 
-  describe "when after an '(' that is followed by an unfinished string" do
-    before { vim.feedkeys 'itest("""' }
-
-    it "it indents the next line" do
-      vim.feedkeys '\<CR>'
-      proposed_indent.should == shiftwidth
-      indent.should == shiftwidth
-    end
-
-    it "with contents it indents the second line to the parenthesis" do
-      vim.feedkeys 'second line\<CR>'
-      proposed_indent.should == 5
-      indent.should == 5
-    end
-  end
-
-  describe "when after assigning an unfinished string" do
-    before { vim.feedkeys 'itest = """' }
-
-    it "it indents the next line" do
-      vim.feedkeys '\<CR>'
-      proposed_indent.should == shiftwidth
-      indent.should == shiftwidth
-    end
-  end
-
-  describe "when after assigning an unfinished string" do
-    before { vim.feedkeys 'i    test = """' }
-
-    it "it indents the next line" do
-      vim.feedkeys '\<CR>'
-      indent.should == shiftwidth + 4
-      proposed_indent.should == shiftwidth + 4
-    end
-  end
-
-  describe "when after assigning a finished string" do
-    before { vim.feedkeys 'i    test = ""' }
-
-    it "it does indent the next line" do
-      vim.feedkeys '\<CR>'
-      indent.should == 4
-    end
-
-    it "and writing a new string, it does indent the next line" do
-      vim.feedkeys '\<CR>""'
-      indent.should == 4
-    end
-  end
-
-  describe "when after a docstring" do
-    before { vim.feedkeys 'i    """' }
-
-    it "it does indent the next line" do
-      vim.feedkeys '\<CR>'
-      indent.should == 4
-      proposed_indent.should == 4
-    end
-  end
-
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'
@@ -436,6 +376,80 @@ shared_examples_for "vim" do
   end
 end
 
+shared_examples_for "multiline strings" do
+  describe "when after an '(' that is followed by an unfinished string" do
+    before { vim.feedkeys 'itest("""' }
+
+    it "it indents the next line" do
+      vim.feedkeys '\<CR>'
+      expected_proposed, expected_indent = multiline_indent(0, shiftwidth)
+      proposed_indent.should == expected_proposed
+      indent.should == expected_indent
+    end
+
+    it "with contents it indents the second line to the parenthesis" do
+      vim.feedkeys 'second line\<CR>'
+      expected_proposed, expected_indent = multiline_indent(0, 5)
+      proposed_indent.should == expected_proposed
+      indent.should == expected_indent
+    end
+  end
+
+  describe "when after assigning an unfinished string" do
+    before { vim.feedkeys 'itest = """' }
+
+    it "it indents the next line" do
+      vim.feedkeys '\<CR>'
+      expected_proposed, expected_indent = multiline_indent(0, shiftwidth)
+      proposed_indent.should == expected_proposed
+      indent.should == expected_indent
+    end
+  end
+
+  describe "when after assigning an unfinished string" do
+    before { vim.feedkeys 'i    test = """' }
+
+    it "it indents the next line" do
+      vim.feedkeys '\<CR>'
+      expected_proposed, expected_indent = multiline_indent(4, shiftwidth + 4)
+      proposed_indent.should == expected_proposed
+      indent.should == expected_indent
+    end
+  end
+
+  describe "when after assigning a finished string" do
+    before { vim.feedkeys 'i    test = ""' }
+
+    it "it does indent the next line" do
+      vim.feedkeys '\<CR>'
+      indent.should == 4
+    end
+
+    it "and writing a new string, it does indent the next line" do
+      vim.feedkeys '\<CR>""'
+      indent.should == 4
+    end
+  end
+
+  describe "when after a docstring" do
+    before { vim.feedkeys 'i    """' }
+    it "it does indent the next line to the docstring" do
+      vim.feedkeys '\<CR>'
+      indent.should == 4
+      proposed_indent.should == 4
+    end
+  end
+
+  describe "when after a docstring with contents" do
+    before { vim.feedkeys 'i    """First line' }
+    it "it does indent the next line to the docstring" do
+      vim.feedkeys '\<CR>'
+      indent.should == 4
+      proposed_indent.should == 4
+    end
+  end
+end
+
 describe "vim when using width of 4" do
   before {
     vim.command("set sw=4 ts=4 sts=4 et")
@@ -448,6 +462,38 @@ describe "vim when using width of 3" do
     vim.command("set sw=3 ts=3 sts=3 et")
   }
   it_behaves_like "vim"
+end
+
+describe "vim when not using python_pep8_indent_multiline_string" do
+  before {
+    vim.command("set sw=4 ts=4 sts=4 et")
+    vim.command("unlet! g:python_pep8_indent_multiline_string")
+  }
+  it_behaves_like "multiline strings"
+end
+
+describe "vim when using python_pep8_indent_multiline_first=0" do
+  before {
+    vim.command("set sw=4 ts=4 sts=4 et")
+    vim.command("let g:python_pep8_indent_multiline_string=0")
+  }
+  it_behaves_like "multiline strings"
+end
+
+describe "vim when using python_pep8_indent_multiline_string=-1" do
+  before {
+    vim.command("set sw=4 ts=4 sts=4 et")
+    vim.command("let g:python_pep8_indent_multiline_string=-1")
+  }
+  it_behaves_like "multiline strings"
+end
+
+describe "vim when using python_pep8_indent_multiline_string=-2" do
+  before {
+    vim.command("set sw=4 ts=4 sts=4 et")
+    vim.command("let g:python_pep8_indent_multiline_string=-2")
+  }
+  it_behaves_like "multiline strings"
 end
 
 describe "vim for cython" do

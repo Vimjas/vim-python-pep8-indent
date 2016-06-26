@@ -32,6 +32,10 @@ setlocal tabstop=4
 setlocal softtabstop=4
 setlocal shiftwidth=4
 
+if !exists('g:python_pep8_indent_multiline_string')
+    let g:python_pep8_indent_multiline_string = 0
+endif
+
 let s:maxoff = 50
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
@@ -350,6 +354,10 @@ function! GetPythonPEPIndent(lnum)
     if s:is_python_string(a:lnum, 1)
         if s:is_python_string(a:lnum-1)
             " Previous line is (completely) a string.
+            " Keep existing indent.
+            if match(getline(a:lnum), '\v^\s*\S') != -1
+                return -1
+            endif
             return s:indent_prevnonblank(a:lnum)
         endif
 
@@ -360,10 +368,18 @@ function! GetPythonPEPIndent(lnum)
 
         if match(getline(a:lnum-1), '\v%("""|'''''')$') != -1
             " Opening multiline string, started in previous line.
+            let indent_multi = get(g:, 'python_pep8_indent_multiline_string', 0)
+            if indent_multi != -2
+                return indent_multi
+            endif
             return s:indent_prevnonblank(a:lnum) + s:sw()
         endif
 
         if s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+            let indent_multi = get(g:, 'python_pep8_indent_multiline_string', 0)
+            if indent_multi != -2
+                return indent_multi
+            endif
             return s:indent_like_opening_paren(a:lnum)
         endif
     endif

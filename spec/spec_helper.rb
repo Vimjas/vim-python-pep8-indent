@@ -42,6 +42,10 @@ Vimrunner::RSpec.configure do |config|
       vim.command("call cursor(#{line}, #{col})")
       return indent_value
     end
+    def multiline_indent(prev, default)
+      i = vim.echo("get(g:, 'python_pep8_indent_multiline_string', 0)").to_i
+      return (i == -2 ? default : i), i < 0 ? (i == -1 ? prev : default) : i
+    end
 
     vim
   end
