@@ -4,7 +4,7 @@ vim-python-pep8-indent
 .. image:: https://travis-ci.org/hynek/vim-python-pep8-indent.png?branch=travis
    :target: https://travis-ci.org/hynek/vim-python-pep8-indent
 
-This small script modifies vim_’s indentation behavior to comply with PEP8_ and my aesthetic preferences.
+This small script modifies Vim_’s indentation behavior to comply with PEP8_ and my aesthetic preferences.
 Most importantly::
 
    foobar(foo,
@@ -67,13 +67,13 @@ Therefore, if you want to use this version specifically, you’ll have to disabl
 License and Authorship
 ----------------------
 
-This script is based on one from vim’s official `script repo`_  that was *not* originally written by me.
+This script is based on one from Vim’s official `script repo`_  that was *not* originally written by me.
 Unfortunately the indentation was off by one character in one case and the script hasn’t been updated since 2005.
 
 Even more unfortunately, I wasn’t able to reach any of the original authors/maintainers:
 **David Bustos** and **Eric Mc Sween**.
 
-So I fixed the annoyance it with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
+So I fixed the annoyance with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
 The original patch is still available here_.
 
 Over the time a lot more improvements have been contributed_ by `generous people`_.
@@ -86,7 +86,7 @@ While my Vimscript_ skills are still feeble, I intend to maintain it for now.
 This mainly means that I’ll triage through bugs and pull requests but won’t be fixing much myself.
 
 
-.. _vim: http://www.vim.org/
+.. _Vim: http://www.vim.org/
 .. _PEP8: http://www.python.org/dev/peps/pep-0008/
 .. _`script repo`: http://www.vim.org/scripts/script.php?script_id=974
 .. _`Steve Losh`: http://stevelosh.com/
@@ -99,4 +99,4 @@ This mainly means that I’ll triage through bugs and pull requests but won’t 
 .. _me: https://hynek.me/
 .. _CC0: http://creativecommons.org/publicdomain/zero/1.0/
 .. _contributed: https://github.com/hynek/vim-python-pep8-indent/blob/master/CONTRIBUTING.rst
-.. _`generous people`: https://github.com/hynek/vim-python-pep8-indent/blob/master/AUTHORS.rst
+.. _`generous people`: https://github.com/hynek/vim-python-pep8-indent/graphs/contributors
