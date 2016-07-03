@@ -252,14 +252,6 @@ function! s:indent_like_block(lnum)
     return -2
 endfunction
 
-function! s:indent_prevnonblank(lnum)
-    let lnum = prevnonblank(a:lnum - 1)
-    if lnum < 1
-      return indent(a:lnum)
-    endif
-    return indent(lnum)
-endfunction
-
 function! s:indent_like_previous_line(lnum)
     let lnum = prevnonblank(a:lnum - 1)
 
@@ -352,36 +344,33 @@ function! GetPythonPEPIndent(lnum)
 
     " Multilinestrings: continous, docstring or starting.
     if s:is_python_string(a:lnum, 1)
+                \ && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+        " Keep existing indent.
+        if match(getline(a:lnum), '\v^\s*\S') != -1
+            return -1
+        endif
+
         if s:is_python_string(a:lnum-1)
             " Previous line is (completely) a string.
-            " Keep existing indent.
-            if match(getline(a:lnum), '\v^\s*\S') != -1
-                return -1
-            endif
-            return s:indent_prevnonblank(a:lnum)
+            return indent(a:lnum-1)
         endif
 
         if match(getline(a:lnum-1), '^\s*\%("""\|''''''\)') != -1
             " docstring.
-            return s:indent_prevnonblank(a:lnum)
+            return indent(a:lnum-1)
+        endif
+
+        let indent_multi = get(b:, 'python_pep8_indent_multiline_string',
+                    \ get(g:, 'python_pep8_indent_multiline_string', 0))
+        if indent_multi != -2
+            return indent_multi
         endif
 
         if match(getline(a:lnum-1), '\v%("""|'''''')$') != -1
             " Opening multiline string, started in previous line.
-            let indent_multi = get(g:, 'python_pep8_indent_multiline_string', 0)
-            if indent_multi != -2
-                return indent_multi
-            endif
-            return s:indent_prevnonblank(a:lnum) + s:sw()
+            return indent(a:lnum-1) + s:sw()
         endif
-
-        if s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
-            let indent_multi = get(g:, 'python_pep8_indent_multiline_string', 0)
-            if indent_multi != -2
-                return indent_multi
-            endif
-            return s:indent_like_opening_paren(a:lnum)
-        endif
+        return s:indent_like_opening_paren(a:lnum)
     endif
 
     " Parens: If we can find an open parenthesis/bracket/brace, line up with it.

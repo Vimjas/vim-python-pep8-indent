@@ -56,13 +56,13 @@ Follow the instructions on installing NeoBundle_ and add the appropriate NeoBund
 Configuration
 -------------
 
-g:python_pep8_indent_multiline_string
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python_pep8_indent_multiline_string
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can configure the initial indentation of multiline strings using ``g:python_pep8_indent_multiline_string``.
+You can configure the initial indentation of multiline strings using ``g:python_pep8_indent_multiline_string`` (which can also be set per buffer).
 This defaults to ``0``, which means that multiline strings are not indented.
 ``-1`` and positive values will be used as-is, where ``-1`` is a special value for Vim's ``indentexpr``, and will keep the existing indent (using Vim's ``autoindent`` setting).
-``-2`` is meant to be used with strings that are wrapped with ``textwrap.dedent``.  It will add a level of indentation if the multiline string started in the previous line, without any content in it already::
+``-2`` is meant to be used for strings that are wrapped with ``textwrap.dedent`` etc.  It will add a level of indentation if the multiline string started in the previous line, without any content in it already::
 
    testdir.makeconftest("""
        _
