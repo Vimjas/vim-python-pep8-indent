@@ -281,15 +281,19 @@ function! s:indent_like_previous_line(lnum)
         return -1
     endif
 
-    " If this line is dedented and the number of indent spaces is valid
-    " (multiple of the indentation size), trust the user
-    let dedent_size = current - base
-    if dedent_size < 0 && current % s:sw() == 0
+    if s:is_dedented_already(current, base)
         return -1
     endif
 
     " In all other cases, line up with the start of the previous statement.
     return base
+endfunction
+
+" If this line is dedented and the number of indent spaces is valid
+" (multiple of the indentation size), trust the user.
+function! s:is_dedented_already(current, base)
+    let dedent_size = a:current - a:base
+    return (dedent_size < 0 && a:current % s:sw() == 0) ? 1 : 0
 endfunction
 
 " Is the syntax at lnum (and optionally cnum) a python string?
