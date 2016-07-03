@@ -67,13 +67,13 @@ Therefore, if you want to use this version specifically, you’ll have to disabl
 License and Authorship
 ----------------------
 
-This script is based on one from vim’s official `script repo`_  that was *not* originally written by me.
+This script is based on one from Vim’s official `script repo`_  that was *not* originally written by me.
 Unfortunately the indentation was off by one character in one case and the script hasn’t been updated since 2005.
 
 Even more unfortunately, I wasn’t able to reach any of the original authors/maintainers:
 **David Bustos** and **Eric Mc Sween**.
 
-So I fixed the annoyance it with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
+So I fixed the annoyance with the help of `Steve Losh`_ and am putting it out here so you don’t have to patch the original yourself.
 The original patch is still available here_.
 
 Over the time a lot more improvements have been contributed_ by `generous people`_.
