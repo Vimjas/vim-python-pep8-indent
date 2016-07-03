@@ -4,7 +4,7 @@ vim-python-pep8-indent
 .. image:: https://travis-ci.org/hynek/vim-python-pep8-indent.png?branch=travis
    :target: https://travis-ci.org/hynek/vim-python-pep8-indent
 
-This small script modifies vim_’s indentation behavior to comply with PEP8_ and my aesthetic preferences.
+This small script modifies Vim_’s indentation behavior to comply with PEP8_ and my aesthetic preferences.
 Most importantly::
 
    foobar(foo,
@@ -86,7 +86,7 @@ While my Vimscript_ skills are still feeble, I intend to maintain it for now.
 This mainly means that I’ll triage through bugs and pull requests but won’t be fixing much myself.
 
 
-.. _vim: http://www.vim.org/
+.. _Vim: http://www.vim.org/
 .. _PEP8: http://www.python.org/dev/peps/pep-0008/
 .. _`script repo`: http://www.vim.org/scripts/script.php?script_id=974
 .. _`Steve Losh`: http://stevelosh.com/
