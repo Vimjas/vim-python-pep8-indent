@@ -99,4 +99,4 @@ This mainly means that I’ll triage through bugs and pull requests but won’t 
 .. _me: https://hynek.me/
 .. _CC0: http://creativecommons.org/publicdomain/zero/1.0/
 .. _contributed: https://github.com/hynek/vim-python-pep8-indent/blob/master/CONTRIBUTING.rst
-.. _`generous people`: https://github.com/hynek/vim-python-pep8-indent/blob/master/AUTHORS.rst
+.. _`generous people`: https://github.com/hynek/vim-python-pep8-indent/graphs/contributors
