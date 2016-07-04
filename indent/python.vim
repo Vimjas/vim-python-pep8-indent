@@ -35,9 +35,11 @@ setlocal shiftwidth=4
 let s:maxoff = 50
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
-            \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
             \ '^\s*except\>': ['try', 'except'],
             \ '^\s*finally\>': ['try', 'except', 'else']
+            \ }
+let s:block_rules_multiple = {
+            \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
             \ }
 let s:paren_pairs = ['()', '{}', '[]']
 if &ft == 'pyrex' || &ft == 'cython'
@@ -136,22 +138,28 @@ function! s:find_start_of_multiline_statement(lnum)
     endwhile
 endfunction
 
-" Find the block starter that matches the current line
-function! s:find_start_of_block(lnum, types)
+" Find possible indent(s) of the block starter that matches the current line.
+function! s:find_start_of_block(lnum, types, multiple)
+    let r = []
     let re = '\V\^\s\*\('.join(a:types, '\|').'\)\>'
-
     let lnum = a:lnum
     let last_indent = indent(lnum) + 1
     while lnum > 0 && last_indent > 0
-        if indent(lnum) < last_indent
+        let indent = indent(lnum)
+        if indent < last_indent
             if getline(lnum) =~# re
-                return lnum
+                if !a:multiple
+                    return [indent]
+                endif
+                if !len(r) || index(r, indent) == -1
+                    let r += [indent]
+                endif
             endif
             let last_indent = indent(lnum)
         endif
         let lnum = prevnonblank(lnum - 1)
     endwhile
-    return 0
+    return r
 endfunction
 
 " Is "expr" true for every position in "lnum", beginning at "start"?
@@ -212,20 +220,31 @@ endfunction
 " Match indent of first block of this type.
 function! s:indent_like_block(lnum)
     let text = getline(a:lnum)
+    for [multiple, block_rules] in [
+                \ [0, s:block_rules],
+                \ [1, s:block_rules_multiple]]
+        for [line_re, blocks] in items(block_rules)
+            if text !~# line_re
+                continue
+            endif
 
-    for [line_re, blocks] in items(s:block_rules)
-        if text !~# line_re
-            continue
-        endif
-
-        let lnum = s:find_start_of_block(a:lnum - 1, blocks)
-        if lnum > 0
-            return indent(lnum)
-        else
-            return -1
-        endif
+            let indents = s:find_start_of_block(a:lnum - 1, blocks, multiple)
+            if !len(indents)
+                return -1
+            endif
+            if len(indents) == 1
+                return indents[0]
+            endif
+            " Multiple valid indents, e.g. for 'else' with both try and if.
+            let indent = indent(a:lnum)
+            for possible_indent in indents
+                if indent == possible_indent
+                    return indent
+                endif
+            endfor
+            return -2
+        endfor
     endfor
-
     return -2
 endfunction
 
