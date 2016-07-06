@@ -32,6 +32,10 @@ setlocal tabstop=4
 setlocal softtabstop=4
 setlocal shiftwidth=4
 
+if !exists('g:python_pep8_indent_multiline_string')
+    let g:python_pep8_indent_multiline_string = 0
+endif
+
 let s:maxoff = 50
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
@@ -333,28 +337,40 @@ function! s:is_python_string(lnum, ...)
 endfunction
 
 function! GetPythonPEPIndent(lnum)
-
     " First line has indent 0
     if a:lnum == 1
         return 0
     endif
 
     " Multilinestrings: continous, docstring or starting.
-    if s:is_python_string(a:lnum)
+    if s:is_python_string(a:lnum, 1)
+                \ && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
+        " Keep existing indent.
+        if match(getline(a:lnum), '\v^\s*\S') != -1
+            return -1
+        endif
+
         if s:is_python_string(a:lnum-1)
             " Previous line is (completely) a string.
-            return s:indent_like_previous_line(a:lnum)
+            return indent(a:lnum-1)
         endif
 
         if match(getline(a:lnum-1), '^\s*\%("""\|''''''\)') != -1
             " docstring.
-            return s:indent_like_previous_line(a:lnum)
+            return indent(a:lnum-1)
         endif
 
-        if s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
-            " String started in previous line.
-            return 0
+        let indent_multi = get(b:, 'python_pep8_indent_multiline_string',
+                    \ get(g:, 'python_pep8_indent_multiline_string', 0))
+        if indent_multi != -2
+            return indent_multi
         endif
+
+        if match(getline(a:lnum-1), '\v%("""|'''''')$') != -1
+            " Opening multiline string, started in previous line.
+            return indent(a:lnum-1) + s:sw()
+        endif
+        return s:indent_like_opening_paren(a:lnum)
     endif
 
     " Parens: If we can find an open parenthesis/bracket/brace, line up with it.
