@@ -361,6 +361,14 @@ shared_examples_for "vim" do
      end
   end
 
+  describe "when an else is used inside of a nested if" do
+    before { vim.feedkeys 'iif foo:\<CR>\<TAB>if bar:\<CR>\<TAB>\<TAB>pass\<CR>' }
+    it "indents an else to the inner if" do
+      vim.feedkeys 'else:'
+      indent.should == shiftwidth * 2
+    end
+  end
+
   describe "when jedi-vim call signatures are used" do
     before { vim.command 'syn match jediFunction "JEDI_CALL_SIGNATURE" keepend extend' }
 
