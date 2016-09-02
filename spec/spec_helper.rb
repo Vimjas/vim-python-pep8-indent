@@ -38,7 +38,7 @@ Vimrunner::RSpec.configure do |config|
     def proposed_indent
       line = vim.echo("line('.')")
       col = vim.echo("col('.')")
-      indent_value = vim.echo("GetPythonPEPIndent(line('.'))").to_i
+      indent_value = vim.echo("GetPythonPEPIndent(#{line})").to_i
       vim.command("call cursor(#{line}, #{col})")
       return indent_value
     end
