@@ -349,12 +349,25 @@ function! GetPythonPEPIndent(lnum)
         return 0
     endif
 
+    let line = getline(a:lnum)
+    let prevline = getline(a:lnum-1)
+
     " Multilinestrings: continous, docstring or starting.
-    if s:is_python_string(a:lnum, 1)
-                \ && s:is_python_string(a:lnum-1, len(getline(a:lnum-1)))
-        " Keep existing indent.
-        if match(getline(a:lnum), '\v^\s*\S') != -1
-            return -1
+    if s:is_python_string(a:lnum-1, len(prevline))
+                \ && (s:is_python_string(a:lnum, 1)
+                \     || match(line, '^\%("""\|''''''\)') != -1)
+
+        " Indent closing quotes as the line with the opening ones.
+        let match_quotes = match(line, '^\s*\zs\%("""\|''''''\)')
+        if match_quotes != -1
+            " closing multiline string
+            let quotes = line[match_quotes:match_quotes+2]
+            let pairpos = searchpairpos(quotes, '', quotes, 'b')
+            if pairpos[0] != 0
+                return indent(pairpos[0])
+            else
+                " TODO: test to cover this!
+            endif
         endif
 
         if s:is_python_string(a:lnum-1)
@@ -362,21 +375,35 @@ function! GetPythonPEPIndent(lnum)
             return indent(a:lnum-1)
         endif
 
-        if match(getline(a:lnum-1), '^\s*\%("""\|''''''\)') != -1
+        if match(prevline, '^\s*\%("""\|''''''\)') != -1
             " docstring.
             return indent(a:lnum-1)
         endif
 
         let indent_multi = get(b:, 'python_pep8_indent_multiline_string',
                     \ get(g:, 'python_pep8_indent_multiline_string', 0))
+        if match(prevline, '\v%("""|'''''')$') != -1
+            " Opening multiline string, started in previous line.
+            if (&autoindent && indent(a:lnum) == indent(a:lnum-1))
+                        \ || match(line, '\v^\s+$') != -1
+                " <CR> with empty line or to split up 'foo("""bar' into
+                " 'foo("""' and 'bar'.
+                if indent_multi == -2
+                    return indent(a:lnum-1) + s:sw()
+                endif
+                return indent_multi
+            endif
+        endif
+
+        " Keep existing indent.
+        if match(line, '\v^\s*\S') != -1
+            return -1
+        endif
+
         if indent_multi != -2
             return indent_multi
         endif
 
-        if match(getline(a:lnum-1), '\v%("""|'''''')$') != -1
-            " Opening multiline string, started in previous line.
-            return indent(a:lnum-1) + s:sw()
-        endif
         return s:indent_like_opening_paren(a:lnum)
     endif
 

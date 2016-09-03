@@ -456,6 +456,16 @@ shared_examples_for "multiline strings" do
       proposed_indent.should == 4
     end
   end
+
+  describe "when breaking a string after opening parenthesis" do
+    before { vim.feedkeys 'i    foo("""bar<Left><Left><Left>' }
+    it "it does indent the next line as after an opening multistring" do
+      vim.feedkeys '\<CR>'
+      expected_proposed, expected_indent = multiline_indent(4, 4 + shiftwidth)
+      indent.should == expected_indent
+      proposed_indent.should == expected_proposed
+    end
+  end
 end
 
 describe "vim when using width of 4" do
