@@ -145,20 +145,26 @@ endfunction
 " Find possible indent(s) of the block starter that matches the current line.
 function! s:find_start_of_block(lnum, types, multiple)
     let r = []
+    let types = copy(a:types)
     let re = '\V\^\s\*\('.join(a:types, '\|').'\)\>'
     let lnum = a:lnum
     let last_indent = indent(lnum) + 1
     while lnum > 0 && last_indent > 0
         let indent = indent(lnum)
         if indent < last_indent
-            if getline(lnum) =~# re
-                if !a:multiple
-                    return [indent]
+            for type in types
+                let re = '\v^\s*'.type.'>'
+                if getline(lnum) =~# re
+                    if !a:multiple
+                        return [indent]
+                    endif
+                    if index(r, indent) == -1
+                        let r += [indent]
+                    endif
+                    " Remove any handled type, e.g. 'if'.
+                    call remove(types, index(types, type))
                 endif
-                if !len(r) || index(r, indent) == -1
-                    let r += [indent]
-                endif
-            endif
+            endfor
             let last_indent = indent(lnum)
         endif
         let lnum = prevnonblank(lnum - 1)
@@ -239,14 +245,15 @@ function! s:indent_like_block(lnum)
             if len(indents) == 1
                 return indents[0]
             endif
+
             " Multiple valid indents, e.g. for 'else' with both try and if.
             let indent = indent(a:lnum)
-            for possible_indent in indents
-                if indent == possible_indent
-                    return indent
-                endif
-            endfor
-            return -2
+            if index(indents, indent) != -1
+                " The indent is valid, keep it.
+                return indent
+            endif
+            " Fallback to the first/nearest one.
+            return indents[0]
         endfor
     endfor
     return -2
