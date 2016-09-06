@@ -27,6 +27,7 @@ setlocal expandtab
 setlocal nolisp
 setlocal autoindent
 setlocal indentexpr=GetPythonPEPIndent(v:lnum)
+setlocal formatexpr=GetPythonPEPFormat(v:lnum,v:count)
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},=elif,=except
 setlocal tabstop=4
 setlocal softtabstop=4
@@ -59,6 +60,8 @@ let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vstring|comment|jedi\\S"'
 
+let s:skip_string = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
+            \ '=~? "String"'
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'
 
@@ -420,4 +423,124 @@ function! GetPythonPEPIndent(lnum)
     endif
 
     return s:indent_like_previous_line(a:lnum)
+endfunction
+
+function s:SearchPosWithSkip(pattern, flags, skip, stopline)
+    "
+    " Returns true if a match is found for {pattern}, but ignores matches
+    " where {skip} evaluates to false. This allows you to do nifty things
+    " like, say, only matching outside comments, only on odd-numbered lines,
+    " or whatever else you like.
+    "
+    " Mimics the built-in search() function, but adds a {skip} expression
+    " like that available in searchpair() and searchpairpos().
+    " (See the Vim help on search() for details of the other parameters.)
+    "
+    " Note the current position, so that if there are no unskipped
+    " matches, the cursor can be restored to this location.
+    "
+    let l:flags = a:flags
+    let l:movepos = getpos('.')
+    let l:firstmatch = []
+    let l:pos = [0, 0, 0, 0]
+
+    " Loop as long as {pattern} continues to be found.
+    "
+    while search(a:pattern, l:flags, a:stopline) > 0
+        if l:firstmatch == []
+            let l:firstmatch = getpos('.')
+            let l:flags = substitute(l:flags, 'c', '', '')
+        elseif l:firstmatch == getpos('.')
+            break
+        endif
+
+        " If {skip} is true, ignore this match and continue searching.
+        "
+        if eval(a:skip)
+            continue
+        endif
+
+        " If we get here, {pattern} was found and {skip} is false,
+        " so this is a match we don't want to ignore. Update the
+        " match position and stop searching.
+        "
+        let l:pos = getpos('.')
+        let l:movepos = getpos('.')
+        break
+
+    endwhile
+
+    " Jump to the position of the unskipped match, or to the original
+    " position if there wasn't one.
+    "
+
+    call setpos('.', l:movepos)
+    return [l:pos[1], l:pos[2]]
+
+endfunction
+
+function s:IsInComment(lnum, col)
+    echom synIDattr(synID(a:lnum, a:col, 1), 'name')
+    return synIDattr(synID(a:lnum, a:col, 1), 'name') =~? 'comment'
+endfunction
+
+function! GetPythonPEPFormat(lnum, count)
+  let l:tw = &textwidth ? &textwidth : 79
+
+  let l:winview = winsaveview()
+
+  let l:count = a:count
+  let l:first_char = indent(a:lnum) + 1
+
+  if mode() ==? 'i' " gq was not pressed, but tw was set
+    return 1
+  endif
+
+  " This gq is only meant to do code with strings, not comments.
+  if s:IsInComment(a:lnum, l:first_char)
+    return 1
+  endif
+
+  if len(getline(a:lnum)) <= l:tw && l:count == 1 " No need for gq
+    return 1
+  endif
+
+  " Put all the lines on one line and do normal splitting after that.
+  if l:count > 1
+    while l:count > 1
+      let l:count -= 1
+      normal! J
+    endwhile
+  endif
+
+  call cursor(a:lnum, l:tw + 1)
+  let l:orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
+  call cursor(a:lnum, l:tw + 1)
+  call cursor(a:lnum, l:tw + 1)
+  let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
+
+  echom 'normal'
+  echom l:orig_breakpoint[1]
+  echom 'new'
+  echom l:breakpoint[1]
+  " No need for special treatment, normal gq handles edgecases better
+  if l:breakpoint[1] == l:orig_breakpoint[1]
+    call winrestview(l:winview)
+    return 1
+  endif
+
+  " If the match is at the indent level try breaking after string as last
+  " resort
+  if l:breakpoint[1] <= indent(a:lnum)
+    call cursor(a:lnum, l:tw + 1)
+    let l:breakpoint = s:SearchPosWithSkip(' ', 'cW', s:skip_special_chars, a:lnum)
+  endif
+
+
+  if l:breakpoint[1] == 0
+    call winrestview(l:winview)
+  else
+    call feedkeys("r\<CR>")
+    call feedkeys('gqq')
+  endif
 endfunction
