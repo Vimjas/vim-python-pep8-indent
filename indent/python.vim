@@ -536,10 +536,12 @@ function! GetPythonPEPFormat(lnum, count)
   endif
 
 
+  "" Fallback to old behaviour when nothing is found
   if l:breakpoint[1] == 0
     call winrestview(l:winview)
-  else
-    call feedkeys("r\<CR>")
-    call feedkeys('gqq')
+    return 1
   endif
+
+  call feedkeys("r\<CR>")
+  call feedkeys('gqq')
 endfunction
