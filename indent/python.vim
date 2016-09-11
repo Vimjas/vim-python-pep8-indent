@@ -543,6 +543,6 @@ function! GetPythonPEPFormat(lnum, count)
     return 1
   endif
 
-  call feedkeys("r\<CR>")
-  call feedkeys('gqq')
+  call feedkeys("r\<CR>", 'n')
+  call feedkeys('gqq', 'n')
 endfunction
