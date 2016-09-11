@@ -532,7 +532,8 @@ function! GetPythonPEPFormat(lnum, count)
   " resort
   if l:breakpoint[1] <= indent(a:lnum)
     call cursor(a:lnum, l:tw + 1)
-    let l:breakpoint = s:SearchPosWithSkip(' ', 'cW', s:skip_special_chars, a:lnum)
+    "Search for a space that is not trailing whitespace
+    let l:breakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
   endif
 
 
