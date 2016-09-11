@@ -480,7 +480,6 @@ function s:SearchPosWithSkip(pattern, flags, skip, stopline)
 endfunction
 
 function s:IsInComment(lnum, col)
-    echom synIDattr(synID(a:lnum, a:col, 1), 'name')
     return synIDattr(synID(a:lnum, a:col, 1), 'name') =~? 'comment'
 endfunction
 
@@ -518,10 +517,6 @@ function! GetPythonPEPFormat(lnum, count)
   call cursor(a:lnum, l:tw + 1)
   let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
 
-  echom 'normal'
-  echom l:orig_breakpoint[1]
-  echom 'new'
-  echom l:breakpoint[1]
   " No need for special treatment, normal gq handles edgecases better
   if l:breakpoint[1] == l:orig_breakpoint[1]
     call winrestview(l:winview)
