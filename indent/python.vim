@@ -538,6 +538,21 @@ function! GetPythonPEPFormat(lnum, count)
     return 1
   endif
 
-  call feedkeys("r\<CR>", 'n')
+  let l:winview = winsaveview()
+
+  " Check if match is inside brackets
+  let l:bracket = searchpairpos('(', '', ')', 'bW', s:skip_string)
+  call winrestview(l:winview)
+  let l:curly = searchpairpos('{', '', '}', 'bW', s:skip_string)
+  call winrestview(l:winview)
+  let l:square = searchpairpos('\[', '', '\]', 'bW', s:skip_string)
+  call winrestview(l:winview)
+
+  if l:bracket[0] == 0 && l:curly[0] == 0 && l:square[0] == 0
+    call feedkeys("a\\\<CR>\<esc>", 'n')
+  else
+    call feedkeys("r\<CR>", 'n')
+  endif
+
   call feedkeys('gqq', 'n')
 endfunction
