@@ -516,7 +516,6 @@ function! GetPythonPEPFormat(lnum, count)
   call cursor(a:lnum, l:tw + 1)
   let l:orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
   call cursor(a:lnum, l:tw + 1)
-  call cursor(a:lnum, l:tw + 1)
   let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
 
   echom 'normal'
