@@ -514,45 +514,95 @@ function! GetPythonPEPFormat(lnum, count)
 
   call cursor(a:lnum, l:tw + 1)
   let l:orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
+  let l:orig_breakpointview = winsaveview()
+  " If breaking inside string extra space is needed for the space and quote
+  call cursor(a:lnum, l:tw - 1)
+  let l:better_orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
+  let l:better_orig_breakpointview = winsaveview()
   call cursor(a:lnum, l:tw + 1)
   let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
+  let l:breakpointview = winsaveview()
 
-  " No need for special treatment, normal gq handles edgecases better
+  " No need for special treatment, normal gq handles normal cases just fine
   if l:breakpoint[1] == l:orig_breakpoint[1]
+              \ || s:isMultilineString(l:orig_breakpointview)
     call winrestview(l:winview)
     return 1
   endif
 
   " If the match is at the indent level try breaking after string as last
   " resort
-  if l:breakpoint[1] <= indent(a:lnum)
-    call cursor(a:lnum, l:tw + 1)
-    "Search for a space that is not trailing whitespace
-    let l:breakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
-  endif
+  " if l:breakpoint[1] <= indent(a:lnum)
+  "   call cursor(a:lnum, l:tw + 1)
+  "   "Search for a space that is not trailing whitespace
+  "   let l:breakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
+  " endif
 
 
   "" Fallback to old behaviour when nothing is found
-  if l:breakpoint[1] == 0
-    call winrestview(l:winview)
-    return 1
-  endif
+  " if l:breakpoint[1] == 0
+  "   call winrestview(l:winview)
+  "   return 1
+  " endif
+  " let l:breakpoint_brackets = s:isBetweenBrackets(l:breakpointview)
+  " let l:orig_breakpoint_brackets = s:isBetweenBrackets(l:orig_breakpointview)
 
-  let l:winview = winsaveview()
+  "echom s:isBetweenPair('(', ')', l:breakpointview, s:skip_string)
+  "echom s:isBetweenPair('{', '}', l:breakpointview, s:skip_string)
+  "echom s:isBetweenPair('\[', '\]', l:breakpointview, s:skip_string)
+  "echom s:isBetweenPair('(', ')', l:orig_breakpointview, s:skip_string)
+  "echom s:isBetweenPair('{', '}', l:orig_breakpointview, s:skip_string)
+  "echom s:isBetweenPair('\[', '\]', l:orig_breakpointview, s:skip_string)
+  "echom 'new'
+  "echom l:breakpoint[1]
+  "echom 'orig'
+  "echom l:orig_breakpoint[1]
 
-  " Check if match is inside brackets
-  let l:bracket = searchpairpos('(', '', ')', 'bW', s:skip_string)
-  call winrestview(l:winview)
-  let l:curly = searchpairpos('{', '', '}', 'bW', s:skip_string)
-  call winrestview(l:winview)
-  let l:square = searchpairpos('\[', '', '\]', 'bW', s:skip_string)
-  call winrestview(l:winview)
-
-  if l:bracket[0] == 0 && l:curly[0] == 0 && l:square[0] == 0
-    call feedkeys("a\\\<CR>\<esc>", 'n')
-  else
+  "Order of breaking:
+  " 1. Only break on breakpoints that have actually been found
+  " 2. Breaking inside brackets is preferred (no backslash needed)
+  " 3. Breking outside a string is preferred (new breakpoint)
+  " 4. Possible future: breaking at space is preferred
+  if l:breakpoint[0] != 0 && s:isBetweenBrackets(l:breakpointview)
+    "echom 'between brackets'
+    call winrestview(l:breakpointview)
     call feedkeys("r\<CR>", 'n')
+  else
+    "echom 'zooooi'
+    if l:better_orig_breakpoint[0] != 0
+                \ && s:isBetweenBrackets(l:better_orig_breakpointview)
+        "echom 'doing the quotes'
+        call winrestview(l:better_orig_breakpointview)
+        call feedkeys("a'\<CR>'\<esc>", 'n')
+    elseif l:breakpoint[0] != 0
+        "echom 'not doing the quotes'
+        call winrestview(l:breakpointview)
+        call feedkeys("a\\\<CR>\<esc>", 'n')
+    else
+        "echom 'fallling back to old method'
+        call winrestview(l:winview)
+        return 1
+    endif
   endif
 
   call feedkeys('gqq', 'n')
+endfunction
+
+function s:isBetweenBrackets(winview)
+  " Check if match is inside brackets
+  let l:skip = s:skip_string
+  return s:isBetweenPair('(', ')', a:winview, l:skip)
+    \ || s:isBetweenPair('{', '}', a:winview, l:skip)
+    \ || s:isBetweenPair('\[', '\]', a:winview, l:skip)
+endfunction
+
+function s:isMultilineString(winview)
+  return s:isBetweenPair("'''", "'''", a:winview, '')
+    \ || s:isBetweenPair('"""', '"""', a:winview, '')
+endfunction
+
+function s:isBetweenPair(left, right, winview, skip)
+  call winrestview(a:winview)
+  let l:bracket = searchpairpos(a:left, '', a:right, 'bW', a:skip)
+  return l:bracket[0] != 0
 endfunction
