@@ -570,9 +570,17 @@ function! GetPythonPEPFormat(lnum, count)
     "echom 'zooooi'
     if l:better_orig_breakpoint[0] != 0
                 \ && s:isBetweenBrackets(l:better_orig_breakpointview)
-        "echom 'doing the quotes'
+        " echom 'doing the quotes'
         call winrestview(l:better_orig_breakpointview)
-        call feedkeys("a'\<CR>'\<esc>", 'n')
+        let l:pos_start_string =
+                    \ s:SearchPosWithSkip('.', 'bcW', s:skip_string, a:lnum)
+        call winrestview(l:better_orig_breakpointview)
+        " Use single or double quote corresponding with start of string
+        if getline(a:lnum)[l:pos_start_string[1]] ==# '"'
+            call feedkeys("a\"\<CR>\"\<esc>", 'n')
+        else
+            call feedkeys("a'\<CR>'\<esc>", 'n')
+        endif
     elseif l:breakpoint[0] != 0
         "echom 'not doing the quotes'
         call winrestview(l:breakpointview)
