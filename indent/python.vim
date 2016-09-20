@@ -523,9 +523,8 @@ function! GetPythonPEPFormat(lnum, count)
   let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
   let l:breakpointview = winsaveview()
 
-  " No need for special treatment, normal gq handles normal cases just fine
-  if l:breakpoint[1] == l:orig_breakpoint[1]
-              \ || s:isMultilineString(l:orig_breakpointview)
+  " No need for special treatment, normal gq handles docstrings fine
+  if s:isMultilineString(l:orig_breakpointview)
     call winrestview(l:winview)
     return 1
   endif
