@@ -576,8 +576,18 @@ function! GetPythonPEPFormat(lnum, count)
         let l:pos_start_string =
                     \ s:SearchPosWithSkip('.', 'bcW', s:skip_string, a:lnum)
         call winrestview(l:better_orig_breakpointview)
-        " Use single or double quote corresponding with start of string
-        if getline(a:lnum)[l:pos_start_string[1]] ==# '"'
+        " Find the type of start quote of the string
+        " and skip charactars at the start of the string like b/u/r
+        let l:extra_chars = 0
+        let l:cur_char = getline(a:lnum)[l:pos_start_string[1]]
+        while l:cur_char !=# '"' && l:cur_char !=# "'"
+            let l:extra_chars += 1
+            let l:cur_char = getline(a:lnum)[l:pos_start_string[1]
+                        \ + l:extra_chars]
+        endwhile
+
+
+        if l:cur_char ==# '"'
             call feedkeys("a\"\<CR>\"\<esc>", 'n')
         else
             call feedkeys("a'\<CR>'\<esc>", 'n')
