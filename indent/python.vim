@@ -594,7 +594,18 @@ function! GetPythonPEPFormat(lnum, count)
         endif
     elseif l:breakpoint[1] > indent(a:lnum)
         call winrestview(l:breakpointview)
-        call feedkeys("a\\\<CR>\<esc>", 'n')
+
+        let l:next_char = getline(a:lnum)[l:breakpoint[1]]
+        if l:next_char !=# '{' && l:next_char !=# '(' && l:next_char !=# '['
+                    \ && !s:isBetweenBrackets(l:breakpointview)
+            "Add a bracket when this is not present yet
+            call winrestview(l:breakpointview)
+            call feedkeys("a(\<esc>", 'n')
+        else
+            "Otherwise fall back to a backslash
+            call winrestview(l:breakpointview)
+            call feedkeys("a\\\<CR>\<esc>", 'n')
+        endif
     else
         call cursor(a:lnum, l:tw + 1)
         "Search for a space that is not trailing whitespace
