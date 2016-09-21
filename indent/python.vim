@@ -563,13 +563,13 @@ function! GetPythonPEPFormat(lnum, count)
   " 2. Breaking inside brackets is preferred (no backslash needed)
   " 3. Breking outside a string is preferred (new breakpoint)
   " 4. Possible future: breaking at space is preferred
-  if l:breakpoint[0] != 0 && s:isBetweenBrackets(l:breakpointview)
+  if l:breakpoint[1] > indent(a:lnum) && s:isBetweenBrackets(l:breakpointview)
     "echom 'between brackets'
     call winrestview(l:breakpointview)
     call feedkeys("r\<CR>", 'n')
   else
     "echom 'zooooi'
-    if l:better_orig_breakpoint[0] != 0
+    if l:better_orig_breakpoint[1] > indent(a:lnum)
                 \ && s:isBetweenBrackets(l:better_orig_breakpointview)
         " echom 'doing the quotes'
         call winrestview(l:better_orig_breakpointview)
@@ -596,8 +596,10 @@ function! GetPythonPEPFormat(lnum, count)
         call winrestview(l:breakpointview)
 
         let l:next_char = getline(a:lnum)[l:breakpoint[1]]
-        if l:next_char !=# '{' && l:next_char !=# '(' && l:next_char !=# '['
-                    \ && !s:isBetweenBrackets(l:breakpointview)
+        if l:next_char ==# '{' || l:next_char ==# '(' || l:next_char ==# '['
+            "Add a newline after the bracket
+            call feedkeys("la\<CR>\<esc>", 'n')
+        elseif !s:isBetweenBrackets(l:breakpointview)
             "Add a bracket when this is not present yet
             call winrestview(l:breakpointview)
             call feedkeys("a(\<esc>", 'n')
