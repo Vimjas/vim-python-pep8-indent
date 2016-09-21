@@ -512,14 +512,17 @@ function! GetPythonPEPFormat(lnum, count)
     endwhile
   endif
 
-  call cursor(a:lnum, l:tw + 1)
+  let l:twplus1 = s:VirtcolToCol(a:lnum, l:tw + 1)
+  let l:twminus1 = s:VirtcolToCol(a:lnum, l:tw - 1)
+
+  call cursor(a:lnum, l:twplus1)
   let l:orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
   let l:orig_breakpointview = winsaveview()
   " If breaking inside string extra space is needed for the space and quote
-  call cursor(a:lnum, l:tw - 1)
+  call cursor(a:lnum, l:twminus1)
   let l:better_orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
   let l:better_orig_breakpointview = winsaveview()
-  call cursor(a:lnum, l:tw + 1)
+  call cursor(a:lnum, l:twplus1)
   let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
   let l:breakpointview = winsaveview()
 
@@ -609,7 +612,7 @@ function! GetPythonPEPFormat(lnum, count)
             call feedkeys("a\\\<CR>\<esc>", 'n')
         endif
     else
-        call cursor(a:lnum, l:tw + 1)
+        call cursor(a:lnum, l:twplus1)
         "Search for a space that is not trailing whitespace
         let l:afterbreakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
 
@@ -638,4 +641,15 @@ function s:isBetweenPair(left, right, winview, skip)
   call winrestview(a:winview)
   let l:bracket = searchpairpos(a:left, '', a:right, 'bW', a:skip)
   return l:bracket[0] != 0
+endfunction
+
+function s:VirtcolToCol(lnum, cnum)
+    let l:last = virtcol([a:lnum, '$'])
+    let l:cnum = a:cnum
+    let l:vcol = virtcol([a:lnum, l:cnum])
+    while l:vcol <= a:cnum && l:vcol < l:last
+        let l:cnum += 1
+        let l:vcol = virtcol([a:lnum, l:cnum])
+    endwhile
+    return l:cnum - 1
 endfunction
