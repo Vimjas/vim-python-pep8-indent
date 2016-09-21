@@ -500,7 +500,7 @@ function! GetPythonPEPFormat(lnum, count)
     return 1
   endif
 
-  if len(getline(a:lnum)) <= l:tw && l:count == 1 " No need for gq
+  if virtcol('$') <= l:tw + 1 && l:count == 1 " No need for gq
     return 1
   endif
 
