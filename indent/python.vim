@@ -480,8 +480,13 @@ function s:SearchPosWithSkip(pattern, flags, skip, stopline)
 endfunction
 
 function s:IsInComment(lnum, col)
-    return synIDattr(synID(a:lnum, a:col, 1), 'name') =~? 'comment'
+    return synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'comment'
 endfunction
+
+function s:IsInMultilineString(lnum, col)
+  return synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'multiline'
+endfunction
+
 
 function! GetPythonPEPFormat(lnum, count)
   let l:tw = &textwidth ? &textwidth : 79
@@ -492,11 +497,6 @@ function! GetPythonPEPFormat(lnum, count)
   let l:first_char = indent(a:lnum) + 1
 
   if mode() ==? 'i' " gq was not pressed, but tw was set
-    return 1
-  endif
-
-  " This gq is only meant to do code with strings, not comments.
-  if s:IsInComment(a:lnum, l:first_char)
     return 1
   endif
 
@@ -524,7 +524,8 @@ function! GetPythonPEPFormat(lnum, count)
   let l:breakpointview = winsaveview()
 
   " No need for special treatment, normal gq handles docstrings fine
-  if s:isMultilineString(l:orig_breakpointview)
+  if s:IsInMultilineString(l:orig_breakpoint[0], l:orig_breakpoint[1])
+              \|| s:IsInComment(l:orig_breakpoint[0], l:orig_breakpoint[1])
     call winrestview(l:winview)
     return 1
   endif
@@ -601,11 +602,6 @@ function s:isBetweenBrackets(winview)
   return s:isBetweenPair('(', ')', a:winview, l:skip)
     \ || s:isBetweenPair('{', '}', a:winview, l:skip)
     \ || s:isBetweenPair('\[', '\]', a:winview, l:skip)
-endfunction
-
-function s:isMultilineString(winview)
-  return s:isBetweenPair("'''", "'''", a:winview, '')
-    \ || s:isBetweenPair('"""', '"""', a:winview, '')
 endfunction
 
 function s:isBetweenPair(left, right, winview, skip)
