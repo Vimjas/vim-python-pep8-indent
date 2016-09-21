@@ -582,14 +582,21 @@ function! GetPythonPEPFormat(lnum, count)
         else
             call feedkeys("a'\<CR>'\<esc>", 'n')
         endif
-    elseif l:breakpoint[0] != 0
-        "echom 'not doing the quotes'
+    elseif l:breakpoint[1] > indent(a:lnum)
         call winrestview(l:breakpointview)
         call feedkeys("a\\\<CR>\<esc>", 'n')
     else
-        "echom 'fallling back to old method'
-        call winrestview(l:winview)
-        return 1
+        call cursor(a:lnum, l:tw + 1)
+        "Search for a space that is not trailing whitespace
+        let l:afterbreakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
+
+        if l:afterbreakpoint[0] != 0
+            call feedkeys("r\<CR>", 'n')
+        else
+            "echom 'fallling back to old method'
+            call winrestview(l:winview)
+            return 1
+        endif
     endif
   endif
 
