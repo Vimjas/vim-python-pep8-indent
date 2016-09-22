@@ -425,7 +425,7 @@ function! GetPythonPEPIndent(lnum)
     return s:indent_like_previous_line(a:lnum)
 endfunction
 
-function s:SearchPosWithSkip(pattern, flags, skip, stopline)
+function! s:SearchPosWithSkip(pattern, flags, skip, stopline)
     "
     " Returns true if a match is found for {pattern}, but ignores matches
     " where {skip} evaluates to false. This allows you to do nifty things
@@ -479,11 +479,11 @@ function s:SearchPosWithSkip(pattern, flags, skip, stopline)
 
 endfunction
 
-function s:IsInComment(lnum, col)
+function! s:IsInComment(lnum, col)
     return synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'comment'
 endfunction
 
-function s:IsInMultilineString(lnum, col)
+function! s:IsInMultilineString(lnum, col)
   return synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'multiline'
 endfunction
 
@@ -629,7 +629,7 @@ function! GetPythonPEPFormat(lnum, count)
   call feedkeys('gqq', 'n')
 endfunction
 
-function s:isBetweenBrackets(winview)
+function! s:isBetweenBrackets(winview)
   " Check if match is inside brackets
   let l:skip = s:skip_string
   return s:isBetweenPair('(', ')', a:winview, l:skip)
@@ -637,13 +637,13 @@ function s:isBetweenBrackets(winview)
     \ || s:isBetweenPair('\[', '\]', a:winview, l:skip)
 endfunction
 
-function s:isBetweenPair(left, right, winview, skip)
+function! s:isBetweenPair(left, right, winview, skip)
   call winrestview(a:winview)
   let l:bracket = searchpairpos(a:left, '', a:right, 'bW', a:skip)
   return l:bracket[0] != 0
 endfunction
 
-function s:VirtcolToCol(lnum, cnum)
+function! s:VirtcolToCol(lnum, cnum)
     let l:last = virtcol([a:lnum, '$'])
     let l:cnum = a:cnum
     let l:vcol = virtcol([a:lnum, l:cnum])
