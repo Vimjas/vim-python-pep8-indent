@@ -61,7 +61,7 @@ let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vstring|comment|jedi\\S"'
 
 let s:skip_string = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "\\vstring|bytes\\S"'
+            \ '=~? "\\vstr|bytes|doc\\S"'
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'
 
