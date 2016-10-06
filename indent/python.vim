@@ -504,14 +504,6 @@ function! GetPythonPEPFormat(lnum, count)
     return 1
   endif
 
-  " Put all the lines on one line and do normal splitting after that.
-  if l:count > 1
-    while l:count > 1
-      let l:count -= 1
-      normal! J
-    endwhile
-  endif
-
   let l:twplus1 = s:VirtcolToCol(a:lnum, l:tw + 1)
   let l:twminus1 = s:VirtcolToCol(a:lnum, l:tw - 1)
 
