@@ -217,6 +217,12 @@ function! s:indent_like_opening_paren(lnum)
             return res + s:sw()
         endif
     endif
+
+    " Indent by one level with colon on previous line (dictionary keys).
+    if getline(a:lnum-1) =~# ':\s*$'
+        let res = res + s:sw()
+    endif
+
     return res
 endfunction
 
