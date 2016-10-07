@@ -74,6 +74,32 @@ With content already, it will be aligned to the opening parenthesis::
 
 Existing indentation (including ``0``) in multiline strings will be kept, so this setting only applies to the indentation of new/empty lines.
 
+g:python_pep8_indent_hang_closing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Control closing bracket indentation with ``python_pep8_indent_hang_closing``, set globally or per buffer.
+
+By default (set to ``0``), closing brackets line up with the opening line::
+
+   my_list = [
+       1, 2, 3,
+       4, 5, 6,
+   ]
+   result = some_function_that_takes_arguments(
+       'a', 'b', 'c',
+       'd', 'e', 'f',
+   )
+
+With ``python_pep8_indent_hang_closing = 1``, closing brackets line up with the items::
+
+   my_list = [
+       1, 2, 3,
+       4, 5, 6,
+       ]
+   result = some_function_that_takes_arguments(
+       'a', 'b', 'c',
+       'd', 'e', 'f',
+       )
 
 Notes
 -----
