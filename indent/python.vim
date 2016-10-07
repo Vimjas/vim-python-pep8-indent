@@ -34,6 +34,10 @@ if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
 endif
 
+if !exists('g:python_pep8_indent_hang_closing')
+    let g:python_pep8_indent_hang_closing = 0
+endif
+
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
             \ '^\s*except\>': ['try', 'except'],
@@ -203,8 +207,11 @@ function! s:indent_like_opening_paren(lnum)
                 \ s:skip_after_opening_paren, paren_lnum, paren_col+1)
     let starts_with_closing_paren = getline(a:lnum) =~# '^\s*[])}]'
 
+    let hang_closing = get(b:, 'python_pep8_indent_hang_closing',
+                \ get(g:, 'python_pep8_indent_hang_closing', 0))
+
     if nothing_after_opening_paren
-        if starts_with_closing_paren
+        if starts_with_closing_paren && !hang_closing
             let res = base
         else
             let res = base + s:sw()
