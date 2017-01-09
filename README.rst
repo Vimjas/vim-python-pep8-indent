@@ -74,6 +74,12 @@ With content already, it will be aligned to the opening parenthesis::
 
 Existing indentation (including ``0``) in multiline strings will be kept, so this setting only applies to the indentation of new/empty lines.
 
+python_pep8_indent_max_back_search
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have an error re-indenting a large list or dict set ``g:python_pep8_indent_max_back_search`` to a larger number.
+This defaults to ``50``
+
 
 Notes
 -----
