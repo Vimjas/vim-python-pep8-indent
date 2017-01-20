@@ -1,0 +1,31 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: blueyed/vim-python-pep8-indent-vims-for-test:1@sha256:8c77867e1fdf673a6df0ecf6628f8e4d80579a0a097ec196109ca0bc145d86c0
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: |
+            Xvfb :99 &
+            DISPLAY=:99 VIMRUNNER_REUSE_SERVER=1 rspec spec
+
+  checkqa:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Lint
+          command: |
+            pip install --user vim-vint
+            ~/.local/bin/vint **/*.vim
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
+      - checkqa
