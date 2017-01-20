@@ -19,6 +19,9 @@ Running Tests
 - Run the tests with the command::
 
    $ rspec spec
+- Alternatively you can use Docker::
+
+   $ docker-compose run --rm rspec
 
 Thank you for considering to contribute!
 
