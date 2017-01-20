@@ -76,6 +76,14 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when after an '[' that is inside a byte string" do
+    before { vim.feedkeys 'itest = b"["\<CR>' }
+
+    it "does not indent" do
+      indent.should == 0
+    end
+  end
+
   describe "when after an '{' that is followed by a comment" do
     before { vim.feedkeys 'imydict = {  # comment\<CR>' }
 

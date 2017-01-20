@@ -20,6 +20,7 @@ Vimrunner::RSpec.configure do |config|
 
     vim.command "set rtp^=#{plugin_path}"
     vim.command "runtime syntax/python.vim"
+    vim.command "runtime pythonbytes.vim"
     vim.command "runtime indent/python.vim"
 
     def shiftwidth
