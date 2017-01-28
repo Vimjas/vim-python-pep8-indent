@@ -1,8 +1,8 @@
 vim-python-pep8-indent
 ======================
 
-.. image:: https://travis-ci.org/hynek/vim-python-pep8-indent.png?branch=travis
-   :target: https://travis-ci.org/hynek/vim-python-pep8-indent
+.. image:: https://travis-ci.org/Vimjas/vim-python-pep8-indent.png?branch=master
+   :target: https://travis-ci.org/Vimjas/vim-python-pep8-indent
 
 This small script modifies Vim_’s indentation behavior to comply with PEP8_ and my aesthetic preferences.
 Most importantly::
@@ -30,7 +30,7 @@ Follow the instructions on installing Pathogen_ and then:
 .. code-block:: shell-session
 
    $ cd ~/.vim/bundle
-   $ git clone https://github.com/hynek/vim-python-pep8-indent.git
+   $ git clone https://github.com/Vimjas/vim-python-pep8-indent.git
 
 
 Vundle
@@ -40,7 +40,7 @@ Follow the instructions on installing Vundle_ and add the appropriate plugin lin
 
 .. code-block:: vim
 
-   Plugin 'hynek/vim-python-pep8-indent'
+   Plugin 'Vimjas/vim-python-pep8-indent'
 
 
 NeoBundle
@@ -50,7 +50,7 @@ Follow the instructions on installing NeoBundle_ and add the appropriate NeoBund
 
 .. code-block:: vim
 
-   NeoBundle 'hynek/vim-python-pep8-indent'
+   NeoBundle 'Vimjas/vim-python-pep8-indent'
 
 
 Configuration

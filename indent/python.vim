@@ -1,6 +1,7 @@
 " PEP8 compatible Python indent file
 " Language:         Python
-" Maintainer:       Hynek Schlawack <hs@ox.cx>
+" Maintainer:       Daniel Hahler <https://daniel.hahler.de/>
+" Prev Maintainer:  Hynek Schlawack <hs@ox.cx>
 " Prev Maintainer:  Eric Mc Sween <em@tomcom.de> (address invalid)
 " Original Author:  David Bustos <bustos@caltech.edu> (address invalid)
 " License:          CC0
@@ -9,6 +10,7 @@
 " Written in 2004 by David Bustos <bustos@caltech.edu>
 " Maintained from 2004-2005 by Eric Mc Sween <em@tomcom.de>
 " Maintained from 2013 by Hynek Schlawack <hs@ox.cx>
+" Maintained from 2017 by Daniel Hahler <https://daniel.hahler.de/>
 "
 " To the extent possible under law, the author(s) have dedicated all copyright
 " and related and neighboring rights to this software to the public domain
