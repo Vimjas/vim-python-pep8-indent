@@ -75,9 +75,6 @@ if has('conceal')
 endif
 
 
-let s:skip_search = "synIDattr(synID(line('.'), col('.'), 0), 'name') " .
-            \ "=~? '\\(comment\\|Bytes\\|String\\)'"
-
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
 if exists('*shiftwidth')
