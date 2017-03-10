@@ -75,8 +75,8 @@ if has('conceal')
 endif
 
 
-let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "comment"'
+let s:skip_search = "synIDattr(synID(line('.'), col('.'), 0), 'name') " .
+            \ "=~? '\\(comment\\|Bytes\\|String\\)'"
 
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
@@ -112,7 +112,9 @@ function! s:find_opening_paren(...)
     let stopline = max([0, line('.') - s:maxoff])
 
     " Return if cursor is in a comment.
-    exe 'if' s:skip_search '| return [0, 0] | endif'
+    if match(synIDattr(synID(line('.'), col('.'), 0), 'name'), '\(comment\|Bytes\|String\)')
+        return [0, 0]
+    endif
 
     let positions = []
     for p in s:paren_pairs
@@ -338,7 +340,8 @@ function! s:is_python_string(lnum, ...)
     let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
     for cnum in cols
         if match(map(synstack(a:lnum, cnum),
-                    \ 'synIDattr(v:val,"name")'), 'python\S*String') == -1
+                    \ 'synIDattr(v:val,"name")'), 'python\S*\(String\|Bytes\)') == -1
+            echom line . ' is not a string'
             return 0
         end
     endfor
