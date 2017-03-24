@@ -109,7 +109,7 @@ function! s:find_opening_paren(...)
     let stopline = max([0, line('.') - s:maxoff])
 
     " Return if cursor is in a comment.
-    if match(synIDattr(synID(line('.'), col('.'), 0), 'name'), '\(comment\|Bytes\|String\)')
+    if match(synIDattr(synID(line('.'), col('.'), 0), 'name'), '\(comment\|Bytes\|String\|error\)')
         return [0, 0]
     endif
 
@@ -338,7 +338,6 @@ function! s:is_python_string(lnum, ...)
     for cnum in cols
         if match(map(synstack(a:lnum, cnum),
                     \ 'synIDattr(v:val,"name")'), 'python\S*\(String\|Bytes\)') == -1
-            echom line . ' is not a string'
             return 0
         end
     endfor
