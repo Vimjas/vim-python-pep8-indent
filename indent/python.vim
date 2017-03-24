@@ -95,6 +95,9 @@ function! s:pair_sort(x, y)
     endif
 endfunction
 
+let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .		
+            \ '=~? "pythonSpaceError"'
+
 " Find backwards the closest open parenthesis/bracket/brace.
 function! s:find_opening_paren(...)
     " optional arguments: line and column (defaults to 1) to search around
@@ -109,9 +112,7 @@ function! s:find_opening_paren(...)
     let stopline = max([0, line('.') - s:maxoff])
 
     " Return if cursor is in a comment.
-    if match(synIDattr(synID(line('.'), col('.'), 0), 'name'), '\(comment\|Bytes\|String\|error\)')
-        return [0, 0]
-    endif
+    exe 'if' s:skip_search '| return [0, 0] | endif'
 
     let positions = []
     for p in s:paren_pairs
@@ -121,6 +122,7 @@ function! s:find_opening_paren(...)
 
     " Remove empty matches and return the type with the closest match
     call filter(positions, 'v:val[0]')
+    call filter(positions 'synIDattr(synID(v:val[0], v:val[1], 0), "name")) =~? "comment\\|string\\|error"')
     call sort(positions, 's:pair_sort')
 
     return get(positions, -1, [0, 0])
