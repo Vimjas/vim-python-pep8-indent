@@ -38,6 +38,10 @@ if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
 endif
 
+if !exists('g:python_pep8_indent_continuation_indent_width')
+    let g:python_pep8_indent_continuation_indent_width = 4
+endif
+
 let s:maxoff = 50
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
@@ -212,7 +216,7 @@ function! s:indent_like_opening_paren(lnum)
         if starts_with_closing_paren
             let res = base
         else
-            let res = base + s:sw()
+            let res = base + eval(g:python_pep8_indent_continuation_indent_width)
         endif
     else
         " Indent to match position of opening paren.

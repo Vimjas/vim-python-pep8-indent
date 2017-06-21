@@ -74,6 +74,15 @@ With content already, it will be aligned to the opening parenthesis::
 
 Existing indentation (including ``0``) in multiline strings will be kept, so this setting only applies to the indentation of new/empty lines.
 
+python_pep8_indent_continuation_indent_width
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This option specifies the indent width used for line continuations from a parenthesis/bracket/brace.
+
+.. code-block:: vim
+    let g:python_pep8_indent_continuation_indent_width = 4 " default
+    let g:python_pep8_indent_continuation_indent_width = "&sw * 2"
+    let g:python_pep8_indent_continuation_indent_width = 8
 
 Notes
 -----
