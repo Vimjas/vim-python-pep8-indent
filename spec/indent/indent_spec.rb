@@ -161,6 +161,27 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when line is empty inside a block" do
+    it "is indented like the previous line" do
+      vim.feedkeys 'idef a():\<CR>1\<CR>\<CR>2\<ESC>kcc'
+      indent.should == shiftwidth
+    end
+  end
+
+  describe "when line is empty inside a block following multi-line statement" do
+    it "is indented like the previous line" do
+      vim.feedkeys 'idef a():\<CR>x = (1 +\<CR>2)\<CR>\<CR>y\<ESC>kcc'
+      indent.should == shiftwidth
+    end
+  end
+
+  describe "when line is empty inside a block following stop statement" do
+    it "is indented like the previous line minus shiftwidth" do
+      vim.feedkeys 'iif x:\<CR>if y:\<CR>pass\<CR>\<CR>z\<ESC>kcc'
+      indent.should == shiftwidth
+    end
+  end
+
   describe "when using simple control structures" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iwhile True:\<CR>pass'

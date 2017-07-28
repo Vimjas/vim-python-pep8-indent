@@ -303,17 +303,19 @@ function! s:indent_like_previous_line(lnum)
         return base + s:sw()
     endif
 
+    let empty = getline(a:lnum) =~# '^\s*$'
+
     " If the previous statement was a stop-execution statement or a pass
     if getline(start) =~# s:stop_statement
         " Remove one level of indentation if the user hasn't already dedented
-        if indent(a:lnum) > base - s:sw()
+        if empty || current > base - s:sw()
             return base - s:sw()
         endif
         " Otherwise, trust the user
         return -1
     endif
 
-    if s:is_dedented_already(current, base)
+    if !empty && s:is_dedented_already(current, base)
         return -1
     endif
 
