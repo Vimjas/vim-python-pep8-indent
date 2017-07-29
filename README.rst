@@ -56,8 +56,8 @@ Follow the instructions on installing NeoBundle_ and add the appropriate NeoBund
 Configuration
 -------------
 
-python_pep8_indent_multiline_string
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+g:python_pep8_indent_multiline_string
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can configure the initial indentation of multiline strings using ``g:python_pep8_indent_multiline_string`` (which can also be set per buffer).
 This defaults to ``0``, which means that multiline strings are not indented.
