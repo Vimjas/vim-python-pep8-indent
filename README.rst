@@ -25,12 +25,30 @@ Installation
 Pathogen
 ^^^^^^^^
 
-Follow the instructions on installing Pathogen_ and then:
+Follow the instructions on installing Pathogen_ or use these commands:
 
 .. code-block:: shell-session
+   
+   $ mkdir -p ~/.vim/autoload ~/.vim/bundle
+   $ curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 
-   $ cd ~/.vim/bundle
-   $ git clone https://github.com/Vimjas/vim-python-pep8-indent.git
+Next add this line ~/.vimrc to complete the Pathogen installation:
+
+.. code-block:: vim
+   
+   execute pathogen#infect()
+
+Clone this repository into ~/.vim/bundle/python-pip8-indent:
+
+.. code-block:: shell-session
+   
+   $ git clone https://github.com/Vimjas/vim-python-pep8-indent.git ~/.vim/bundle/python-pip8-indent
+
+Enable filetype indent by adding this to ~/.vimrc to activate python-pep8-indent:
+
+.. code-block:: vim
+   
+   filetype plugin indent on
 
 
 Vundle
