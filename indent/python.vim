@@ -71,9 +71,6 @@ if has('conceal')
 endif
 
 
-let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "comment"'
-
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
 if exists('*shiftwidth')
@@ -93,6 +90,9 @@ function! s:pair_sort(x, y)
         return a:x[0] > a:y[0] ? 1 : -1
     endif
 endfunction
+
+let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .		
+            \ '=~? "comment"'
 
 " Find backwards the closest open parenthesis/bracket/brace.
 function! s:find_opening_paren(...)
@@ -118,6 +118,7 @@ function! s:find_opening_paren(...)
 
     " Remove empty matches and return the type with the closest match
     call filter(positions, 'v:val[0]')
+    call filter(positions '(synIDattr(synID(v:val[0], v:val[1], 0), "name")) !~? "comment\\|string\\|error\\|bytes")')
     call sort(positions, 's:pair_sort')
 
     return get(positions, -1, [0, 0])
@@ -336,7 +337,7 @@ function! s:is_python_string(lnum, ...)
     let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
     for cnum in cols
         if match(map(synstack(a:lnum, cnum),
-                    \ 'synIDattr(v:val,"name")'), 'python\S*String') == -1
+                    \ 'synIDattr(v:val,"name")'), 'python\S*\(String\|Bytes\)') == -1
             return 0
         end
     endfor
