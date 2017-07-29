@@ -4,7 +4,7 @@ branches:
     - master
 language: ruby
 rvm:
-  - 1.9.3
+  - 2.4.1
 before_install:
   - sudo apt-get install vim-gtk
 before_script:
