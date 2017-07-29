@@ -25,14 +25,10 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
-setlocal expandtab
 setlocal nolisp
 setlocal autoindent
 setlocal indentexpr=GetPythonPEPIndent(v:lnum)
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},=elif,=except
-setlocal tabstop=4
-setlocal softtabstop=4
-setlocal shiftwidth=4
 
 if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
