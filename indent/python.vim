@@ -20,7 +20,7 @@
 " <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 " Only load this indent file when no other was loaded.
-if exists("b:did_indent")
+if exists('b:did_indent')
     finish
 endif
 let b:did_indent = 1
@@ -44,7 +44,7 @@ let s:block_rules_multiple = {
             \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
             \ }
 let s:paren_pairs = ['()', '{}', '[]']
-if &ft == 'pyrex' || &ft == 'cython'
+if &filetype ==# 'pyrex' || &filetype ==# 'cython'
     let b:control_statement = '\v^\s*(class|def|if|while|with|for|except|cdef|cpdef)>'
 else
     let b:control_statement = '\v^\s*(class|def|if|while|with|for|except)>'
@@ -82,7 +82,7 @@ if exists('*shiftwidth')
     endfunction
 else
     function! s:sw()
-        return &sw
+        return &shiftwidth
     endfunction
 endif
 
@@ -127,7 +127,7 @@ endfunction
 function! s:find_start_of_multiline_statement(lnum)
     let lnum = a:lnum
     while lnum > 0
-        if getline(lnum - 1) =~ '\\$'
+        if getline(lnum - 1) =~# '\\$'
             let lnum = prevnonblank(lnum - 1)
         else
             let [paren_lnum, _] = s:find_opening_paren(lnum)
@@ -182,7 +182,7 @@ function! s:match_expr_on_line(expr, lnum, start, ...)
     let r = 1
     for i in range(a:start, end)
         call cursor(a:lnum, i)
-        if !(eval(a:expr) || text[i-1] =~ '\s')
+        if !(eval(a:expr) || text[i-1] =~# '\s')
             let r = 0
             break
         endif
@@ -202,7 +202,7 @@ function! s:indent_like_opening_paren(lnum)
 
     let nothing_after_opening_paren = s:match_expr_on_line(
                 \ s:skip_after_opening_paren, paren_lnum, paren_col+1)
-    let starts_with_closing_paren = getline(a:lnum) =~ '^\s*[])}]'
+    let starts_with_closing_paren = getline(a:lnum) =~# '^\s*[])}]'
 
     if nothing_after_opening_paren
         if starts_with_closing_paren
@@ -276,18 +276,18 @@ function! s:indent_like_previous_line(lnum)
 
     " Search for final colon that is not inside something to be ignored.
     while 1
-        let curpos = getpos(".")[2]
+        let curpos = getpos('.')[2]
         if curpos == 1 | break | endif
-        if eval(s:skip_special_chars) || text[curpos-1] =~ '\s'
+        if eval(s:skip_special_chars) || text[curpos-1] =~# '\s'
             normal! h
             continue
-        elseif text[curpos-1] == ':'
+        elseif text[curpos-1] ==# ':'
             return base + s:sw()
         endif
         break
     endwhile
 
-    if text =~ '\\$' && !ignore_last_char
+    if text =~# '\\$' && !ignore_last_char
         " If this line is the continuation of a control statement
         " indent further to distinguish the continuation line
         " from the next logical line.
@@ -336,7 +336,7 @@ function! s:is_python_string(lnum, ...)
     let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
     for cnum in cols
         if match(map(synstack(a:lnum, cnum),
-                    \ 'synIDattr(v:val,"name")'), 'python\S*String') == -1
+                    \ "synIDattr(v:val, 'name')"), 'python\S*String') == -1
             return 0
         end
     endfor
@@ -361,7 +361,7 @@ function! GetPythonPEPIndent(lnum)
         let match_quotes = match(line, '^\s*\zs\%("""\|''''''\)')
         if match_quotes != -1
             " closing multiline string
-            let quotes = line[match_quotes:match_quotes+2]
+            let quotes = line[match_quotes:(match_quotes+2)]
             let pairpos = searchpairpos(quotes, '', quotes, 'b')
             if pairpos[0] != 0
                 return indent(pairpos[0])
