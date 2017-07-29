@@ -1,10 +1,17 @@
+branches:
+  only:
+    - master
 language: ruby
 rvm:
-    - 1.9.3
-before_install: sudo apt-get install vim-gtk
+  - 1.9.3
+before_install:
+  - sudo apt-get install vim-gtk
 before_script:
-    - "export DISPLAY=:99.0"
-    - "sh -e /etc/init.d/xvfb start"
-    - "bundle install"
-    - "vim --version"
-script: bundle exec rspec
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - bundle install
+  - sudo pip install vim-vint
+  - vim --version
+script:
+  - bundle exec rspec
+  - vint **/*.vim
