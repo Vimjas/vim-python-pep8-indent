@@ -12,10 +12,9 @@ branches:
   only:
     - master
 before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
   - pip install --user vim-vint
   - vim --version
+  - Xvfb :99 &
 script:
-  - VIMRUNNER_REUSE_SERVER=1 bundle exec rspec
+  - VIMRUNNER_REUSE_SERVER=1 DISPLAY=:99 bundle exec rspec spec
   - vint **/*.vim
