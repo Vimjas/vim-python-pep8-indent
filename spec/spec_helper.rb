@@ -5,7 +5,7 @@ Vimrunner::RSpec.configure do |config|
   # Use a single Vim instance for the test suite. Set to false to use an
   # instance per test (slower, but can be easier to manage).
   # This requires using gvim, otherwise it hangs after a few tests.
-  config.reuse_server = ENV['VIMRUNNER_REUSE_SERVER'] ? true : false
+  config.reuse_server = ENV['VIMRUNNER_REUSE_SERVER'] == '1' ? true : false
 
   config.start_vim do
     vim = config.reuse_server ? Vimrunner.start_gvim : Vimrunner.start
