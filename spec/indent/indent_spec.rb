@@ -406,6 +406,17 @@ shared_examples_for "vim" do
 end
 
 shared_examples_for "multiline strings" do
+  before(:each) {
+    # clear buffer
+    vim.normal 'gg"_dG'
+
+    # Insert two blank lines.
+    # The first line is a corner case in this plugin that would shadow the
+    # correct behaviour of other tests. Thus we explicitly jump to the first
+    # line when we require so.
+    vim.feedkeys 'i\<CR>\<CR>\<ESC>'
+  }
+
   describe "when after an '(' that is followed by an unfinished string" do
     before { vim.feedkeys 'itest("""' }
 
@@ -540,6 +551,12 @@ describe "vim for cython" do
     vim.command "enew"
     vim.command "set ft=cython"
     vim.command "runtime indent/python.vim"
+
+    # Insert two blank lines.
+    # The first line is a corner case in this plugin that would shadow the
+    # correct behaviour of other tests. Thus we explicitly jump to the first
+    # line when we require so.
+    vim.feedkeys 'i\<CR>\<CR>\<ESC>'
   }
 
   describe "when using a cdef function definition" do
