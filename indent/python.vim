@@ -34,7 +34,11 @@ if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
 endif
 
-let s:maxoff = 50
+if !exists('g:python_pep_8_indent_max_back_search')
+    let s:maxoff = 50
+else
+    let s:maxoff = g:python_pep_8_indent_max_back_search
+endif
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
             \ '^\s*except\>': ['try', 'except'],
