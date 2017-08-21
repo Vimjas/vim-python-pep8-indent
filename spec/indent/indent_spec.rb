@@ -168,6 +168,20 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "when an empty line is after empty line / before non-empty" do
+    it "is indented like the next line" do
+      vim.feedkeys 'idef a():\<CR>1\<CR>\<CR>\<CR>2\<ESC><<kcc'
+      indent.should == 0
+    end
+  end
+
+  describe "when an empty line is after empty line / before non-empty (nested)" do
+    it "is indented like the next line" do
+      vim.feedkeys 'idef a():\<CR>1\<CR>\<CR>\<CR>\<ESC>0i\<TAB>2\<ESC>kcc'
+      indent.should == shiftwidth
+    end
+  end
+
   describe "when line is empty inside a block following multi-line statement" do
     it "is indented like the previous line" do
       vim.feedkeys 'idef a():\<CR>x = (1 +\<CR>2)\<CR>\<CR>y\<ESC>kcc'

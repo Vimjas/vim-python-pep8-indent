@@ -301,6 +301,13 @@ function! s:indent_like_previous_line(lnum)
 
     let empty = getline(a:lnum) =~# '^\s*$'
 
+    " Current and prev line are empty, next is not -> indent like next.
+    if empty && a:lnum > 1 &&
+          \ (getline(a:lnum - 1) =~# '^\s*$') &&
+          \ !(getline(a:lnum + 1) =~# '^\s*$')
+      return indent(a:lnum + 1)
+    endif
+
     " If the previous statement was a stop-execution statement or a pass
     if getline(start) =~# s:stop_statement
         " Remove one level of indentation if the user hasn't already dedented
