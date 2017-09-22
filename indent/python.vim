@@ -34,7 +34,7 @@ if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
 endif
 
-let s:maxoff = 50
+let s:search_timeout = 5000
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
             \ '^\s*except\>': ['try', 'except'],
@@ -105,15 +105,13 @@ function! s:find_opening_paren(...)
         return ret
     endif
 
-    let stopline = max([0, line('.') - s:maxoff])
-
     " Return if cursor is in a comment.
     exe 'if' s:skip_search '| return [0, 0] | endif'
 
     let positions = []
     for p in s:paren_pairs
         call add(positions, searchpairpos(
-           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline))
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, 1, s:search_timeout))
     endfor
 
     " Remove empty matches and return the type with the closest match
