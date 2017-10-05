@@ -34,7 +34,6 @@ if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
 endif
 
-let s:maxoff = 50
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
             \ '^\s*except\>': ['try', 'except'],
@@ -43,7 +42,9 @@ let s:block_rules = {
 let s:block_rules_multiple = {
             \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
             \ }
-let s:paren_pairs = ['()', '{}', '[]']
+" Pairs to look for when searching for opening parenthesis.
+" The value is the maximum offset in lines.
+let s:paren_pairs = {'()': 10, '[]': 100, '{}': 1000}
 if &filetype ==# 'pyrex' || &filetype ==# 'cython'
     let b:control_statement = '\v^\s*(class|def|if|while|with|for|except|cdef|cpdef)>'
 else
@@ -105,13 +106,12 @@ function! s:find_opening_paren(...)
         return ret
     endif
 
-    let stopline = max([0, line('.') - s:maxoff])
-
     " Return if cursor is in a comment.
     exe 'if' s:skip_search '| return [0, 0] | endif'
 
     let positions = []
-    for p in s:paren_pairs
+    for [p, maxoff] in items(s:paren_pairs)
+        let stopline = max([0, line('.') - maxoff])
         call add(positions, searchpairpos(
            \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline))
     endfor
