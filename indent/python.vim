@@ -109,18 +109,16 @@ function! s:find_opening_paren(...)
     " Return if cursor is in a comment.
     exe 'if' s:skip_search '| return [0, 0] | endif'
 
-    let positions = []
+    let nearest = [0, 0]
     for [p, maxoff] in items(s:paren_pairs)
-        let stopline = max([0, line('.') - maxoff])
-        call add(positions, searchpairpos(
-           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline))
+        let stopline = max([0, line('.') - maxoff, nearest[0]])
+        let next = searchpairpos(
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline)
+        if next[0] && (next[0] > nearest[0] || (next[0] == nearest[0] && next[1] > nearest[1]))
+            let nearest = next
+        endif
     endfor
-
-    " Remove empty matches and return the type with the closest match
-    call filter(positions, 'v:val[0]')
-    call sort(positions, 's:pair_sort')
-
-    return get(positions, -1, [0, 0])
+    return nearest
 endfunction
 
 " Find the start of a multi-line statement
