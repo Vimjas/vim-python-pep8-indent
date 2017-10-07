@@ -16,5 +16,5 @@ before_script:
   - vim --version
   - Xvfb :99 &
 script:
-  - VIMRUNNER_REUSE_SERVER=1 DISPLAY=:99 bundle exec rspec spec
+  - make test
   - vint **/*.vim
