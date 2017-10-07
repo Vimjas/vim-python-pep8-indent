@@ -43,11 +43,11 @@ shared_examples_for "vim" do
     before { vim.feedkeys 'itest(\<CR>' }
 
     it "indents by one level" do
-      proposed_indent.should == shiftwidth
+      proposed_indent.should satisfy { |v| v == shiftwidth * 2 or v == 4 }
       vim.feedkeys 'something'
-      indent.should == shiftwidth
+      indent.should == 4
       vim.normal '=='
-      indent.should == shiftwidth
+      indent.should == 4
     end
 
     it "puts the closing parenthesis at the same level" do
@@ -80,9 +80,9 @@ shared_examples_for "vim" do
     before { vim.feedkeys 'imydict = {  # comment\<CR>' }
 
     it "indent by one level" do
-      indent.should == shiftwidth
+      indent.should == 4
       vim.feedkeys '1: 1,\<CR>'
-      indent.should == shiftwidth
+      indent.should == 4
     end
 
     it "lines up the closing parenthesis" do
@@ -102,7 +102,7 @@ shared_examples_for "vim" do
   describe "when after multiple parens of different types" do
     it "indents by one level" do
       vim.feedkeys 'if({\<CR>'
-      indent.should == shiftwidth
+      indent.should == 4
     end
 
     it "lines up with the last paren" do
@@ -206,14 +206,14 @@ shared_examples_for "vim" do
   describe "when using a function definition" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'idef long_function_name(\<CR>arg'
-          indent.should == shiftwidth * 2
+          indent.should satisfy { |v| v == shiftwidth * 2 or v == 4 }
       end
   end
 
   describe "when using a class definition" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iclass Foo(\<CR>'
-          indent.should == shiftwidth * 2
+          indent.should satisfy { |v| v == shiftwidth * 2 or v == 4 }
       end
   end
 
@@ -414,7 +414,7 @@ shared_examples_for "vim" do
 
     it "ignores the call signature after a function" do
       vim.feedkeys 'idef f(  JEDI_CALL_SIGNATURE\<CR>'
-      indent.should == shiftwidth * 2
+      indent.should satisfy { |v| v == shiftwidth * 2 or v == 4 }
     end
   end
 end
