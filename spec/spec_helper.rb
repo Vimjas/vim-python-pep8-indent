@@ -1,6 +1,11 @@
 require 'vimrunner'
 require 'vimrunner/rspec'
 
+# Explicitly enable usage of "should".
+RSpec.configure do |config|
+    config.expect_with(:rspec) { |c| c.syntax = :should }
+end
+
 Vimrunner::RSpec.configure do |config|
   # Use a single Vim instance for the test suite. Set to false to use an
   # instance per test (slower, but can be easier to manage).
