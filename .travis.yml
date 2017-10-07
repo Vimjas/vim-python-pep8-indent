@@ -14,7 +14,6 @@ branches:
 before_script:
   - pip install --user vim-vint
   - vim --version
-  - Xvfb :99 &
 script:
   - make test
   - vint **/*.vim
