@@ -52,7 +52,7 @@ shared_examples_for "vim" do
 
     it "puts the closing parenthesis at the same level" do
       vim.feedkeys ')'
-      indent.should == 0
+      indent.should == (hang_closing ? shiftwidth : 0)
     end
   end
 
@@ -87,7 +87,7 @@ shared_examples_for "vim" do
 
     it "lines up the closing parenthesis" do
       vim.feedkeys '}'
-      indent.should == 0
+      indent.should == (hang_closing ? shiftwidth : 0)
     end
   end
 
@@ -514,18 +514,31 @@ shared_examples_for "multiline strings" do
   end
 end
 
-describe "vim when using width of 4" do
-  before {
-    vim.command("set sw=4 ts=4 sts=4 et")
-  }
-  it_behaves_like "vim"
-end
+SUITE_SHIFTWIDTHS = [4, 3]
+SUITE_HANG_CLOSINGS = [nil, false, true]
 
-describe "vim when using width of 3" do
-  before {
-    vim.command("set sw=3 ts=3 sts=3 et")
-  }
-  it_behaves_like "vim"
+SUITE_SHIFTWIDTHS.each do |sw|
+  describe "vim when using width of #{sw}" do
+    before {
+      vim.command("set sw=#{sw} ts=#{sw} sts=#{sw} et")
+    }
+    it "sets shiftwidth to #{sw}" do
+      shiftwidth.should == sw
+    end
+
+    SUITE_HANG_CLOSINGS.each do |hc|
+      describe "vim when hang_closing is set to #{hc}" do
+        before {
+          set_hang_closing hc
+        }
+        it "sets hang_closing to #{hc}" do
+          hang_closing.should == !!hc
+        end
+
+        it_behaves_like "vim"
+      end
+    end
+  end
 end
 
 describe "vim when not using python_pep8_indent_multiline_string" do
