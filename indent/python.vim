@@ -44,7 +44,7 @@ let s:block_rules_multiple = {
             \ }
 " Pairs to look for when searching for opening parenthesis.
 " The value is the maximum offset in lines.
-let s:paren_pairs = {'()': 10, '[]': 100, '{}': 1000}
+let s:paren_pairs = {'()': 50, '[]': 100, '{}': 1000}
 
 " Maximum offset when looking for multiline statements (in round parenthesis).
 let s:maxoff_multiline_statement = 50
