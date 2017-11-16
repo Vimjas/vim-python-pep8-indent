@@ -34,7 +34,6 @@ if !exists('g:python_pep8_indent_multiline_string')
     let g:python_pep8_indent_multiline_string = 0
 endif
 
-let s:maxoff = 50
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
             \ '^\s*except\>': ['try', 'except'],
@@ -43,7 +42,13 @@ let s:block_rules = {
 let s:block_rules_multiple = {
             \ '^\s*else\>': ['if', 'elif', 'for', 'try', 'except'],
             \ }
-let s:paren_pairs = ['()', '{}', '[]']
+" Pairs to look for when searching for opening parenthesis.
+" The value is the maximum offset in lines.
+let s:paren_pairs = {'()': 50, '[]': 100, '{}': 1000}
+
+" Maximum offset when looking for multiline statements (in round parenthesis).
+let s:maxoff_multiline_statement = 50
+
 if &filetype ==# 'pyrex' || &filetype ==# 'cython'
     let b:control_statement = '\v^\s*(class|def|if|while|with|for|except|cdef|cpdef)>'
 else
@@ -105,37 +110,36 @@ function! s:find_opening_paren(...)
         return ret
     endif
 
-    let stopline = max([0, line('.') - s:maxoff])
-
     " Return if cursor is in a comment.
     exe 'if' s:skip_search '| return [0, 0] | endif'
 
-    let positions = []
-    for p in s:paren_pairs
-        call add(positions, searchpairpos(
-           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline))
+    let nearest = [0, 0]
+    for [p, maxoff] in items(s:paren_pairs)
+        let stopline = max([0, line('.') - maxoff, nearest[0]])
+        let next = searchpairpos(
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline)
+        if next[0] && (next[0] > nearest[0] || (next[0] == nearest[0] && next[1] > nearest[1]))
+            let nearest = next
+        endif
     endfor
-
-    " Remove empty matches and return the type with the closest match
-    call filter(positions, 'v:val[0]')
-    call sort(positions, 's:pair_sort')
-
-    return get(positions, -1, [0, 0])
+    return nearest
 endfunction
 
-" Find the start of a multi-line statement
+" Find the start of a multi-line statement (based on surrounding parens).
 function! s:find_start_of_multiline_statement(lnum)
     let lnum = a:lnum
     while lnum > 0
+        " XXX: not tested?!
         if getline(lnum - 1) =~# '\\$'
             let lnum = prevnonblank(lnum - 1)
         else
-            let [paren_lnum, _] = s:find_opening_paren(lnum)
-            if paren_lnum < 1
-                return lnum
-            else
-                let lnum = paren_lnum
+            call cursor(lnum, 1)
+            let stopline = max([1, lnum - s:maxoff_multiline_statement])
+            let pos = searchpairpos('\V(', '', '\V)', 'bnW', s:skip_special_chars, stopline)
+            if pos[0]
+                return pos[0]
             endif
+            return lnum
         endif
     endwhile
 endfunction

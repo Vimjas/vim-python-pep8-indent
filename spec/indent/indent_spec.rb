@@ -587,3 +587,67 @@ describe "vim for cython" do
       end
   end
 end
+
+describe "Handles far away opening parens" do
+  before { vim.feedkeys '\<ESC>ggdGifrom foo import (' }
+
+  it "indents by one level" do
+    vim.feedkeys '\<CR>'
+    proposed_indent.should == shiftwidth
+  end
+
+  it "indents by one level for 10 lines" do
+    vim.command('set paste | exe "norm 9o" | set nopaste')
+    vim.feedkeys '\<Esc>o'
+    indent.should == shiftwidth
+  end
+
+  it "indents by one level for 50 lines" do
+    vim.command('set paste | exe "norm 49o" | set nopaste')
+    vim.feedkeys '\<Esc>o'
+    indent.should == shiftwidth
+  end
+end
+
+describe "Handles far away opening square brackets" do
+  before { vim.feedkeys '\<ESC>ggdGibar = [' }
+
+  it "indents by one level" do
+    vim.feedkeys '\<CR>'
+    proposed_indent.should == shiftwidth
+  end
+
+  it "indents by one level for 10 lines" do
+    vim.command('set paste | exe "norm 9o" | set nopaste')
+    vim.feedkeys '\<Esc>o'
+    indent.should == shiftwidth
+  end
+
+  it "indents by one level for 100 lines" do
+    vim.command('set paste | exe "norm 99o" | set nopaste')
+    vim.feedkeys '\<Esc>o'
+    indent.should == shiftwidth
+  end
+end
+
+describe "Handles far away opening curly brackets" do
+  before { vim.feedkeys '\<ESC>ggdGijson = {' }
+
+  it "indents by one level" do
+    vim.feedkeys '\<CR>'
+    vim.feedkeys '\<Esc>o'
+    proposed_indent.should == shiftwidth
+  end
+
+  it "indents by one level for 10 lines" do
+    vim.command('set paste | exe "norm 9o" | set nopaste')
+    vim.feedkeys '\<Esc>o'
+    indent.should == shiftwidth
+  end
+
+  it "indents by one level for 1000 lines" do
+    vim.command('set paste | exe "norm 999o" | set nopaste')
+    vim.feedkeys '\<Esc>o'
+    indent.should == shiftwidth
+  end
+end
