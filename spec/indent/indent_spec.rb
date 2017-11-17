@@ -651,3 +651,18 @@ describe "Handles far away opening curly brackets" do
     indent.should == shiftwidth
   end
 end
+
+describe "Compact multiline dict" do
+  before { vim.feedkeys '\<ESC>ggdGid = {"one": 1,' }
+
+  it "gets indented correctly" do
+    vim.feedkeys '\<CR>'
+    proposed_indent.should == 5
+
+    vim.feedkeys '"two": 2}'
+    proposed_indent.should == 5
+
+    vim.feedkeys '\<CR>'
+    proposed_indent.should == 0
+  end
+end
