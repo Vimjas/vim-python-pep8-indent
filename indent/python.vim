@@ -46,9 +46,6 @@ let s:block_rules_multiple = {
 " The value is the maximum offset in lines.
 let s:paren_pairs = {'()': 50, '[]': 100, '{}': 1000}
 
-" Maximum offset when looking for multiline statements (in round parenthesis).
-let s:maxoff_multiline_statement = 50
-
 if &filetype ==# 'pyrex' || &filetype ==# 'cython'
     let b:control_statement = '\v^\s*(class|def|if|while|with|for|except|cdef|cpdef)>'
 else
@@ -125,21 +122,19 @@ function! s:find_opening_paren(...)
     return nearest
 endfunction
 
-" Find the start of a multi-line statement (based on surrounding parens).
+" Find the start of a multi-line statement
 function! s:find_start_of_multiline_statement(lnum)
     let lnum = a:lnum
     while lnum > 0
-        " XXX: not tested?!
         if getline(lnum - 1) =~# '\\$'
             let lnum = prevnonblank(lnum - 1)
         else
-            call cursor(lnum, 1)
-            let stopline = max([1, lnum - s:maxoff_multiline_statement])
-            let pos = searchpairpos('\V(', '', '\V)', 'bnW', s:skip_special_chars, stopline)
-            if pos[0]
-                return pos[0]
+            let [paren_lnum, _] = s:find_opening_paren(lnum)
+            if paren_lnum < 1
+                return lnum
+            else
+                let lnum = paren_lnum
             endif
-            return lnum
         endif
     endwhile
 endfunction
