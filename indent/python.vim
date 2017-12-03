@@ -55,9 +55,10 @@ let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
 " Skip strings and comments. Return 1 for chars to skip.
 " jedi* refers to syntax definitions from jedi-vim for call signatures, which
-" are inserted temporarily into the buffer.
+" are inserted temporarily into the buffer. hdima/python-syntax adds byte
+" strings.
 let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "\\vstring|comment|jedi\\S"'
+            \ '=~? "\\vstring|comment|bytes|jedi\\S"'
 
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'

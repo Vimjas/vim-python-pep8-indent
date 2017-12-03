@@ -1,0 +1,6 @@
+.dockerignore
+.gitignore
+CONTRIBUTING.rst
+docker-compose.yml
+Dockerfile
+Gemfile.lock

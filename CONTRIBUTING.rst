@@ -7,7 +7,6 @@ I’ve collected a few tips to get you started.
 Please:
 
 - *Always* add tests for your code.
-- Add yourself to the AUTHORS.rst file in an alphabetical fashion by first name – no matter how big or small your changes are.
 - Write `good commit messages`_.
 
 
@@ -20,6 +19,9 @@ Running Tests
 - Run the tests with the command::
 
    $ rspec spec
+- Alternatively you can use Docker::
+
+   $ docker-compose run --rm rspec
 
 Thank you for considering to contribute!
 
