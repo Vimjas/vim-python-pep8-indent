@@ -21,6 +21,8 @@ and::
 Installation
 ------------
 
+Install the plugin using your favorite plugin manager / method, a few examples
+follow:
 
 Pathogen
 ^^^^^^^^
@@ -100,6 +102,21 @@ With ``python_pep8_indent_hang_closing = 1``, closing brackets line up with the 
        'a', 'b', 'c',
        'd', 'e', 'f',
        )
+
+
+Troubleshooting
+---------------
+
+In case it is not working, please make sure your Vim is configured to load
+indent files (``filetype indent on``).
+This is typically the case when using a plugin manager, but check its docs.
+
+Check ``:verbose set indentexpr?`` in a Python file, which should show
+something like the following:
+
+  indentexpr=GetPythonPEPIndent(v:lnum)
+        Last set from ~/…/plugged/vim-python-pep8-indent/indent/python.vim
+
 
 Notes
 -----
