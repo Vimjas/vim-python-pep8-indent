@@ -2,8 +2,6 @@ language: ruby
 dist: trusty
 sudo: false
 cache: bundler
-rvm:
-  - 2.4.1
 addons:
   apt:
     packages:
