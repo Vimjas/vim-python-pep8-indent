@@ -203,15 +203,12 @@ function! s:indent_like_opening_paren(lnum)
     let text = getline(paren_lnum)
     let base = indent(paren_lnum)
 
-    let nothing_after_opening_paren = s:match_expr_on_line(
-                \ s:skip_after_opening_paren, paren_lnum, paren_col+1)
-    let starts_with_closing_paren = getline(a:lnum) =~# '^\s*[])}]'
-
-    let hang_closing = get(b:, 'python_pep8_indent_hang_closing',
-                \ get(g:, 'python_pep8_indent_hang_closing', 0))
-
-    if nothing_after_opening_paren
-        if starts_with_closing_paren && !hang_closing
+    if s:match_expr_on_line(s:skip_after_opening_paren, paren_lnum, paren_col+1)
+        " Nothing after opening paren.
+        if getline(a:lnum) =~# '^\s*[])}]'
+              \ && !get(b:, 'python_pep8_indent_hang_closing',
+              \         get(g:, 'python_pep8_indent_hang_closing', 0))
+            " Does not end with paren, and does not use hang-closing.
             let res = base
         else
             let res = base + s:sw()
