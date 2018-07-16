@@ -251,6 +251,11 @@ shared_examples_for "vim" do
       indent.should == 0
     end
 
+    it "handles nested expressions (Flake8's E127)" do
+      vim.feedkeys 'i[\<CR>x for x in foo\<CR>if (\<CR>'
+      indent.should == shiftwidth * 2
+    end
+
     it "still handles multiple parens correctly" do
       vim.feedkeys 'iif (111 and (222 and 333\<CR>'
       indent.should == 13

@@ -225,10 +225,13 @@ function! s:indent_like_opening_paren(lnum)
     " indent further to distinguish the continuation line
     " from the next logical line.
     if text =~# b:control_statement && res == base + s:sw()
-        return base + s:sw() * 2
-    else
-        return res
+        " But only if not inside parens itself (Flake's E127).
+        let [paren_lnum, _] = s:find_opening_paren(paren_lnum)
+        if paren_lnum <= 0
+            return res + s:sw()
+        endif
     endif
+    return res
 endfunction
 
 " Match indent of first block of this type.
