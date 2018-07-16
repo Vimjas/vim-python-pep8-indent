@@ -515,7 +515,7 @@ shared_examples_for "multiline strings" do
 end
 
 SUITE_SHIFTWIDTHS = [4, 3]
-SUITE_HANG_CLOSINGS = [nil, false, true]
+SUITE_HANG_CLOSINGS = [false, true]
 
 SUITE_SHIFTWIDTHS.each do |sw|
   describe "vim when using width of #{sw}" do

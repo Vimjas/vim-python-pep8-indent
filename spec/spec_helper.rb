@@ -52,12 +52,8 @@ Vimrunner::RSpec.configure do |config|
       return (i != 0)
     end
     def set_hang_closing(value)
-      if value.nil?
-        vim.command("unlet! g:python_pep8_indent_hang_closing")
-      else
-        i = value ? 1 : 0
-        vim.command("let g:python_pep8_indent_hang_closing=#{i}")
-      end
+      i = value ? 1 : 0
+      vim.command("let g:python_pep8_indent_hang_closing=#{i}")
     end
 
     vim
