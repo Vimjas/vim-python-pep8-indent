@@ -10,6 +10,8 @@ branches:
   only:
     - master
 before_script:
+  - pip install --user vim-vint
   - vim --version
 script:
   - make test
+  - vint **/*.vim
