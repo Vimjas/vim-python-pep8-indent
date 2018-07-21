@@ -21,7 +21,11 @@ Vimrunner::RSpec.configure do |config|
     # More friendly killing.
     # Otherwise profiling information might not be written.
     def vim.kill
-      normal(':qall!')
+      normal(':qall!<CR>')
+
+      Timeout.timeout(5) do
+        sleep 0.1 while server.running?
+      end
     end
 
     plugin_path = File.expand_path('../..', __FILE__)
