@@ -14,8 +14,9 @@ ret=0
 for file in ./spec/indent/*_spec.rb; do
   # shellcheck disable=SC2086
   bundle exec rspec "$file" $RSPEC_OPTIONS || ret=1
+  cat "$PYTHON_PEP8_INDENT_TEST_PROFILE_FILE"
+
   covimerage write_coverage --append "$PYTHON_PEP8_INDENT_TEST_PROFILE_FILE"
-  head "$PYTHON_PEP8_INDENT_TEST_PROFILE_FILE"
   covimerage report -m
 done
 exit $ret
