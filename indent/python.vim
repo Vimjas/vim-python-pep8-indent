@@ -92,14 +92,6 @@ else
     endfunction
 endif
 
-function! s:pair_sort(x, y)
-    if a:x[0] == a:y[0]
-        return a:x[1] == a:y[1] ? 0 : a:x[1] > a:y[1] ? 1 : -1
-    else
-        return a:x[0] > a:y[0] ? 1 : -1
-    endif
-endfunction
-
 " Find backwards the closest open parenthesis/bracket/brace.
 function! s:find_opening_paren(...)
     " optional arguments: line and column (defaults to 1) to search around
