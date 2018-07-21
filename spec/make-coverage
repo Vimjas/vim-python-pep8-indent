@@ -17,10 +17,9 @@ for file in ./spec/indent/*_spec.rb; do
 
   for p in "${PYTHON_PEP8_INDENT_TEST_PROFILE_BASE}".*; do
     cat "$p"
+    covimerage write_coverage --append "$p"
+    rm "$p"
+    covimerage report -m
   done
-
-  covimerage write_coverage --append "${PYTHON_PEP8_INDENT_TEST_PROFILE_BASE}".*
-  rm "${PYTHON_PEP8_INDENT_TEST_PROFILE_BASE}".*
-  covimerage report -m
 done
 exit $ret
