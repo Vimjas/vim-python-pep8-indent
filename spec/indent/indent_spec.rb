@@ -1,7 +1,6 @@
 require "spec_helper"
 
 shared_examples_for "vim" do
-
   before(:each) {
     # clear buffer
     vim.normal 'gg"_dG'
@@ -571,34 +570,6 @@ describe "vim when using python_pep8_indent_multiline_string=-2" do
     vim.command("let g:python_pep8_indent_multiline_string=-2")
   }
   it_behaves_like "multiline strings"
-end
-
-describe "vim for cython" do
-  before {
-    vim.command "enew"
-    vim.command "set ft=cython"
-    vim.command "runtime indent/python.vim"
-
-    # Insert two blank lines.
-    # The first line is a corner case in this plugin that would shadow the
-    # correct behaviour of other tests. Thus we explicitly jump to the first
-    # line when we require so.
-    vim.feedkeys 'i\<CR>\<CR>\<ESC>'
-  }
-
-  describe "when using a cdef function definition" do
-      it "indents shiftwidth spaces" do
-          vim.feedkeys 'icdef long_function_name(\<CR>arg'
-          indent.should == shiftwidth * 2
-      end
-  end
-
-  describe "when using a cpdef function definition" do
-      it "indents shiftwidth spaces" do
-          vim.feedkeys 'icpdef long_function_name(\<CR>arg'
-          indent.should == shiftwidth * 2
-      end
-  end
 end
 
 describe "Handles far away opening parens" do

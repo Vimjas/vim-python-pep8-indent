@@ -1,5 +1,6 @@
 require 'vimrunner'
 require 'vimrunner/rspec'
+require 'vimrunner/server'
 
 # Explicitly enable usage of "should".
 RSpec.configure do |config|
@@ -13,15 +14,13 @@ Vimrunner::RSpec.configure do |config|
   config.reuse_server = ENV['VIMRUNNER_REUSE_SERVER'] == '1' ? true : false
 
   config.start_vim do
-    vim = config.reuse_server ? Vimrunner.start_gvim : Vimrunner.start
+    exe = config.reuse_server ? Vimrunner::Platform.gvim : Vimrunner::Platform.vim
+    vimrc = File.expand_path("../vimrc", __FILE__)
+    vim = Vimrunner::Server.new(:executable => exe,
+                                :vimrc => vimrc).start
     plugin_path = File.expand_path('../..', __FILE__)
-
-    # add_plugin appends the path to the rtp... :(
-    # vim.add_plugin(plugin_path, 'indent/python.vim')
-
     vim.command "set rtp^=#{plugin_path}"
-    vim.command "runtime syntax/python.vim"
-    vim.command "runtime indent/python.vim"
+    vim.command "set filetype=python"
 
     def shiftwidth
       @shiftwidth ||= vim.echo("exists('*shiftwidth') ? shiftwidth() : &sw").to_i
