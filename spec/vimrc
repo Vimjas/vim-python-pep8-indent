@@ -15,7 +15,8 @@ let sfile = expand('<sfile>')
 let plugin_path = fnamemodify(sfile, ':p:h:h')
 exe 'set runtimepath^='.plugin_path
 
-if exists('$PYTHON_PEP8_INDENT_TEST_PROFILE_FILE')
-  execute 'profile start '.expand('$PYTHON_PEP8_INDENT_TEST_PROFILE_FILE')
+if exists('$PYTHON_PEP8_INDENT_TEST_PROFILE_BASE')
+  execute printf('profile start %s.%s',
+        \ expand('$PYTHON_PEP8_INDENT_TEST_PROFILE_BASE'), getpid())
   execute 'profile! file '. plugin_path . '/indent/python.vim'
 endif
