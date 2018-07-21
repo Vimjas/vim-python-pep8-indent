@@ -1,15 +1,9 @@
 test:
 	VIMRUNNER_REUSE_SERVER=1 xvfb-run bundle exec rspec
 
-test_slow:
-	VIMRUNNER_REUSE_SERVER=0 bundle exec rspec
-
-test_visible:
-	VIMRUNNER_REUSE_SERVER=1 bundle exec rspec
-
 # Run tests in dockerized Vims.
 DOCKER_REPO:=blueyed/vim-python-pep8-indent-vims-for-test
-DOCKER_TAG:=1
+DOCKER_TAG:=2
 DOCKER_IMAGE:=$(DOCKER_REPO):$(DOCKER_TAG)
 
 docker_image:
@@ -26,3 +20,6 @@ test_docker:
 	  docker run --rm -ti -e DISPLAY -e VIMRUNNER_REUSE_SERVER=1 \
 	  -v $(CURDIR):/vim-python-pep8-indent $(DOCKER_IMAGE) $(RSPEC_ARGS) \
 	  $(if $(VIMRUNNER_TEST_DISPLAY),,; ret=$$?; kill $$XVFB_PID; exit $$ret)
+
+test_coverage:
+	spec/make-coverage

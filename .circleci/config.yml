@@ -1,27 +1,33 @@
 version: 2
 
+common: &common
+  working_directory: ~/repo
+  docker:
+    - image: blueyed/vim-python-pep8-indent-vims-for-test:2@sha256:a7be5f4d07ed361ce3ca78cedd413d67d583f96ab0a59feb512af89052c50172
+
 jobs:
   test:
-    docker:
-      - image: blueyed/vim-python-pep8-indent-vims-for-test:1@sha256:8c77867e1fdf673a6df0ecf6628f8e4d80579a0a097ec196109ca0bc145d86c0
+    <<: *common
     steps:
       - checkout
       - run:
           name: Run tests
           command: |
-            Xvfb :99 &
-            DISPLAY=:99 VIMRUNNER_REUSE_SERVER=1 rspec spec
+            spec/make-coverage
+      - run:
+          name: Report coverage
+          command: |
+            covimerage xml
+            codecov -X search gcov pycov -f coverage.xml
 
   checkqa:
-    docker:
-      - image: circleci/python:3.7
+    <<: *common
     steps:
       - checkout
       - run:
           name: Lint
           command: |
-            pip install --user vim-vint
-            ~/.local/bin/vint **/*.vim
+            vint **/*.vim
 
 workflows:
   version: 2
