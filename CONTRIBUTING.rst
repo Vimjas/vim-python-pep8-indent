@@ -20,6 +20,14 @@ Running Tests
 - Run the tests with the command::
 
    $ rspec spec
+- Alternatively you can use Docker::
+
+   $ make test_docker
+
+- You can select tests based on line numbers, e.g.::
+
+   $ rspec ./spec/indent/indent_spec.rb:385
+   $ make test_docker RSPEC_ARGS=./spec/indent/indent_spec.rb:385
 
 Thank you for considering to contribute!
 
