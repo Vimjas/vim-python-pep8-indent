@@ -18,6 +18,12 @@ Vimrunner::RSpec.configure do |config|
     vimrc = File.expand_path("../vimrc", __FILE__)
     vim = Vimrunner::Server.new(:executable => exe,
                                 :vimrc => vimrc).start
+    # More friendly killing.
+    # Otherwise profiling information might not be written.
+    def vim.kill
+      normal(':qall!')
+    end
+
     plugin_path = File.expand_path('../..', __FILE__)
     vim.command "set rtp^=#{plugin_path}"
     vim.command "set filetype=python"
