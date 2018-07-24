@@ -4,9 +4,12 @@ describe "vim for cython" do
   before(:all) {
     vim.command "new"
     vim.command "set ft=cython"
-    # vim.command("set indentexpr?").should include "GetPythonPEPIndent("
+    vim.command("set indentexpr?").should include "GetPythonPEPIndent("
   }
   before(:each) {
+    # clear buffer
+    vim.normal 'gg"_dG'
+
     # Insert two blank lines.
     # The first line is a corner case in this plugin that would shadow the
     # correct behaviour of other tests. Thus we explicitly jump to the first

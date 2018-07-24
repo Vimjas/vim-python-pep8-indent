@@ -3,7 +3,7 @@ version: 2
 common: &common
   working_directory: ~/repo
   docker:
-    - image: blueyed/vim-python-pep8-indent-vims-for-test:2@sha256:a7be5f4d07ed361ce3ca78cedd413d67d583f96ab0a59feb512af89052c50172
+    - image: blueyed/vim-python-pep8-indent-vims-for-test:3@sha256:e7e3c4f4b021954a40f2f1d88dc470f119dc65603c63724d1c58cbe437fdc2d4
 
 jobs:
   test:
