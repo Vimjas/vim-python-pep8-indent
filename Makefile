@@ -3,7 +3,7 @@ test:
 
 # Run tests in dockerized Vims.
 DOCKER_REPO:=blueyed/vim-python-pep8-indent-vims-for-test
-DOCKER_TAG:=2
+DOCKER_TAG:=3
 DOCKER_IMAGE:=$(DOCKER_REPO):$(DOCKER_TAG)
 
 docker_image:
