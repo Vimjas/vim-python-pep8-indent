@@ -130,7 +130,7 @@ shared_examples_for "vim" do
       vim.echo('synIDattr(synID(line("."), col("."), 0), "name")'
               ).downcase.should include 'string'
       vim.feedkeys 'a\<CR>'
-      proposed_indent.should == 0
+      proposed_indent.should == -1
       indent.should == 0
     end
 
@@ -464,7 +464,7 @@ shared_examples_for "multiline strings" do
     end
   end
 
-  describe "when after assigning an unfinished string" do
+  describe "when after assigning an indented unfinished string" do
     before { vim.feedkeys 'i    test = """' }
 
     it "it indents the next line" do
@@ -475,7 +475,7 @@ shared_examples_for "multiline strings" do
     end
   end
 
-  describe "when after assigning a finished string" do
+  describe "when after assigning an indented finished string" do
     before { vim.feedkeys 'i    test = ""' }
 
     it "it does indent the next line" do
@@ -508,12 +508,30 @@ shared_examples_for "multiline strings" do
   end
 
   describe "when breaking a string after opening parenthesis" do
-    before { vim.feedkeys 'i    foo("""bar<Left><Left><Left>' }
+    before { vim.feedkeys 'i    foo("""bar\<Left>\<Left>\<Left>' }
     it "it does indent the next line as after an opening multistring" do
       vim.feedkeys '\<CR>'
-      expected_proposed, expected_indent = multiline_indent(4, 4 + shiftwidth)
+      _, expected_indent = multiline_indent(4, 4 + shiftwidth)
       indent.should == expected_indent
-      proposed_indent.should == expected_proposed
+      proposed_indent.should == -1
+
+      # it keeps the indent after an empty line
+      vim.feedkeys '\<CR>'
+      proposed_indent, expected_indent = multiline_indent(4, 4 + shiftwidth)
+      indent.should == expected_indent
+      proposed_indent.should == proposed_indent
+
+      # it keeps the indent of nonblank above
+      vim.feedkeys '\<End>\<CR>'
+      proposed_indent, expected_indent = multiline_indent(4, 4 + shiftwidth)
+      indent.should == expected_indent
+      proposed_indent.should == proposed_indent
+
+      # it keeps the indent of nonblank above before an empty line
+      vim.feedkeys '\<CR>'
+      proposed_indent, expected_indent = multiline_indent(4, 4 + shiftwidth)
+      indent.should == expected_indent
+      proposed_indent.should == proposed_indent
     end
   end
 end
