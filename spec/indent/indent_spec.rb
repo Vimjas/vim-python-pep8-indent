@@ -401,10 +401,22 @@ shared_examples_for "vim" do
   end
 
   describe "when an else is used inside of a nested if" do
-    before { vim.feedkeys 'iif foo:\<CR>\<TAB>if bar:\<CR>\<TAB>\<TAB>pass\<CR>' }
-    it "indents an else to the inner if" do
+    before { vim.feedkeys 'iif foo:\<CR>if bar:\<CR>pass\<CR>' }
+    it "indents the else to the inner if" do
       vim.feedkeys 'else:'
-      indent.should == shiftwidth * 2
+      indent.should == shiftwidth
+    end
+  end
+
+  describe "when an else is used outside of a nested if" do
+    before { vim.feedkeys 'iif True:\<CR>if True:\<CR>pass\<CR>\<Esc>0' }
+    it "indents the else to the outer if" do
+      indent.should == 0
+      proposed_indent.should == shiftwidth
+
+      vim.feedkeys 'ielse:'
+      indent.should == 0
+      proposed_indent.should == 0
     end
   end
 

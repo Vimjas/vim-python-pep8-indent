@@ -154,8 +154,6 @@ function! s:find_start_of_block(lnum, types, multiple)
                     if index(r, indent) == -1
                         let r += [indent]
                     endif
-                    " Remove any handled type, e.g. 'if'.
-                    call remove(types, index(types, type))
                 endif
             endfor
             let last_indent = indent(lnum)
