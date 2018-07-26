@@ -337,11 +337,11 @@ endfunction
 " Is the syntax at lnum (and optionally cnum) a python string?
 function! s:is_python_string(lnum, ...)
     let line = getline(a:lnum)
-    let linelen = len(line)
-    if linelen < 1
-      let linelen = 1
+    if a:0
+      let cols = type(a:1) != type([]) ? [a:1] : a:1
+    else
+      let cols = range(1, max([1, len(line)]))
     endif
-    let cols = a:0 ? type(a:1) != type([]) ? [a:1] : a:1 : range(1, linelen)
     for cnum in cols
         if match(map(synstack(a:lnum, cnum),
                     \ "synIDattr(v:val, 'name')"), 'python\S*String') == -1
@@ -361,7 +361,7 @@ function! GetPythonPEPIndent(lnum)
     let prevline = getline(a:lnum-1)
 
     " Multilinestrings: continous, docstring or starting.
-    if s:is_python_string(a:lnum-1, len(prevline))
+    if s:is_python_string(a:lnum-1, max([1, len(prevline)]))
                 \ && (s:is_python_string(a:lnum, 1)
                 \     || match(line, '^\%("""\|''''''\)') != -1)
 
@@ -379,8 +379,8 @@ function! GetPythonPEPIndent(lnum)
         endif
 
         if s:is_python_string(a:lnum-1)
-            " Previous line is (completely) a string.
-            return indent(a:lnum-1)
+            " Previous line is (completely) a string: keep current indent.
+            return -1
         endif
 
         if match(prevline, '^\s*\%("""\|''''''\)') != -1
