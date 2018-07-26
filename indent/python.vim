@@ -28,6 +28,7 @@ let b:did_indent = 1
 setlocal nolisp
 setlocal autoindent
 setlocal indentexpr=GetPythonPEPIndent(v:lnum)
+setlocal formatexpr=GetPythonPEPFormat(v:lnum,v:count)
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},=elif,=except
 
 if !exists('g:python_pep8_indent_multiline_string')
@@ -63,6 +64,8 @@ let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vstring|comment|pythonbytes|jedi\\S"'
 
+let s:skip_string = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
+            \ '=~? "\\vstr|bytes|doc\\S"'
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'
 
@@ -422,4 +425,225 @@ function! GetPythonPEPIndent(lnum)
     endif
 
     return s:indent_like_previous_line(a:lnum)
+endfunction
+
+function! s:SearchPosWithSkip(pattern, flags, skip, stopline)
+    "
+    " Returns true if a match is found for {pattern}, but ignores matches
+    " where {skip} evaluates to false. This allows you to do nifty things
+    " like, say, only matching outside comments, only on odd-numbered lines,
+    " or whatever else you like.
+    "
+    " Mimics the built-in search() function, but adds a {skip} expression
+    " like that available in searchpair() and searchpairpos().
+    " (See the Vim help on search() for details of the other parameters.)
+    "
+    " Note the current position, so that if there are no unskipped
+    " matches, the cursor can be restored to this location.
+    "
+    let l:flags = a:flags
+    let l:movepos = getpos('.')
+    let l:firstmatch = []
+    let l:pos = [0, 0, 0, 0]
+
+    " Loop as long as {pattern} continues to be found.
+    "
+    while search(a:pattern, l:flags, a:stopline) > 0
+        if l:firstmatch == []
+            let l:firstmatch = getpos('.')
+            let l:flags = substitute(l:flags, 'c', '', '')
+        elseif l:firstmatch == getpos('.')
+            break
+        endif
+
+        " If {skip} is true, ignore this match and continue searching.
+        "
+        if eval(a:skip)
+            continue
+        endif
+
+        " If we get here, {pattern} was found and {skip} is false,
+        " so this is a match we don't want to ignore. Update the
+        " match position and stop searching.
+        "
+        let l:pos = getpos('.')
+        let l:movepos = getpos('.')
+        break
+
+    endwhile
+
+    " Jump to the position of the unskipped match, or to the original
+    " position if there wasn't one.
+    "
+
+    call setpos('.', l:movepos)
+    return [l:pos[1], l:pos[2]]
+
+endfunction
+
+function! s:IsInComment(lnum, col)
+    return synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'comment'
+endfunction
+
+function! s:IsInMultilineString(lnum, col)
+  return synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'multiline'
+endfunction
+
+
+function! GetPythonPEPFormat(lnum, count)
+  let l:tw = &textwidth ? &textwidth : 79
+
+  let l:winview = winsaveview()
+
+  let l:count = a:count
+  let l:first_char = indent(a:lnum) + 1
+
+  if mode() ==? 'i' " gq was not pressed, but tw was set
+    return 1
+  endif
+
+  if virtcol('$') <= l:tw + 1 " No need for gq
+    return 1
+  endif
+
+  let l:twplus1 = s:VirtcolToCol(a:lnum, l:tw + 1)
+  let l:twminus1 = s:VirtcolToCol(a:lnum, l:tw - 1)
+
+  call cursor(a:lnum, l:twplus1)
+  let l:orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
+  let l:orig_breakpointview = winsaveview()
+  " If breaking inside string extra space is needed for the space and quote
+  call cursor(a:lnum, l:twminus1)
+  let l:better_orig_breakpoint = searchpos(' ', 'bcW', a:lnum)
+  let l:better_orig_breakpointview = winsaveview()
+  call cursor(a:lnum, l:twplus1)
+  let l:breakpoint = s:SearchPosWithSkip(' ', 'bcW', s:skip_string, a:lnum)
+  let l:breakpointview = winsaveview()
+
+  " No need for special treatment, normal gq handles docstrings fine
+  if s:IsInMultilineString(l:orig_breakpoint[0], l:orig_breakpoint[1])
+              \|| s:IsInComment(l:orig_breakpoint[0], l:orig_breakpoint[1])
+    call winrestview(l:winview)
+    return 1
+  endif
+
+  " If the match is at the indent level try breaking after string as last
+  " resort
+  " if l:breakpoint[1] <= indent(a:lnum)
+  "   call cursor(a:lnum, l:tw + 1)
+  "   "Search for a space that is not trailing whitespace
+  "   let l:breakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
+  " endif
+
+
+  "" Fallback to old behaviour when nothing is found
+  " if l:breakpoint[1] == 0
+  "   call winrestview(l:winview)
+  "   return 1
+  " endif
+  " let l:breakpoint_brackets = s:isBetweenBrackets(l:breakpointview)
+  " let l:orig_breakpoint_brackets = s:isBetweenBrackets(l:orig_breakpointview)
+
+  "echom s:isBetweenPair('(', ')', l:breakpointview, s:skip_string)
+  "echom s:isBetweenPair('{', '}', l:breakpointview, s:skip_string)
+  "echom s:isBetweenPair('\[', '\]', l:breakpointview, s:skip_string)
+  "echom s:isBetweenPair('(', ')', l:orig_breakpointview, s:skip_string)
+  "echom s:isBetweenPair('{', '}', l:orig_breakpointview, s:skip_string)
+  "echom s:isBetweenPair('\[', '\]', l:orig_breakpointview, s:skip_string)
+  "echom 'new'
+  "echom l:breakpoint[1]
+  "echom 'orig'
+  "echom l:orig_breakpoint[1]
+
+  "Order of breaking:
+  " 1. Only break on breakpoints that have actually been found
+  " 2. Breaking inside brackets is preferred (no backslash needed)
+  " 3. Breking outside a string is preferred (new breakpoint)
+  " 4. Possible future: breaking at space is preferred
+  if l:breakpoint[1] > indent(a:lnum) && s:isBetweenBrackets(l:breakpointview)
+    "echom 'between brackets'
+    call winrestview(l:breakpointview)
+    call feedkeys("r\<CR>", 'n')
+  else
+    "echom 'zooooi'
+    if l:better_orig_breakpoint[1] > indent(a:lnum)
+                \ && s:isBetweenBrackets(l:better_orig_breakpointview)
+        " echom 'doing the quotes'
+        call winrestview(l:better_orig_breakpointview)
+        let l:pos_start_string =
+                    \ s:SearchPosWithSkip('.', 'bcW', s:skip_string, a:lnum)
+        call winrestview(l:better_orig_breakpointview)
+        " Find the type of start quote of the string
+        " and skip charactars at the start of the string like b/u/r
+        let l:extra_chars = 0
+        let l:cur_char = getline(a:lnum)[l:pos_start_string[1]]
+        while l:cur_char !=# '"' && l:cur_char !=# "'"
+            let l:extra_chars += 1
+            let l:cur_char = getline(a:lnum)[l:pos_start_string[1]
+                        \ + l:extra_chars]
+        endwhile
+
+
+        if l:cur_char ==# '"'
+            call feedkeys("a\"\<CR>\"\<esc>", 'n')
+        else
+            call feedkeys("a'\<CR>'\<esc>", 'n')
+        endif
+    elseif l:breakpoint[1] > indent(a:lnum)
+        call winrestview(l:breakpointview)
+
+        let l:next_char = getline(a:lnum)[l:breakpoint[1]]
+        if l:next_char ==# '{' || l:next_char ==# '(' || l:next_char ==# '['
+            "Add a newline after the bracket
+            call feedkeys("la\<CR>\<esc>", 'n')
+        elseif !s:isBetweenBrackets(l:breakpointview)
+            "Add a bracket when this is not present yet
+            call winrestview(l:breakpointview)
+            call feedkeys("a(\<esc>", 'n')
+        else
+            "Otherwise fall back to a backslash
+            call winrestview(l:breakpointview)
+            call feedkeys("a\\\<CR>\<esc>", 'n')
+        endif
+    else
+        call cursor(a:lnum, l:twplus1)
+        "Search for a space that is not trailing whitespace
+        let l:afterbreakpoint = s:SearchPosWithSkip(' [^ ]', 'cW', s:skip_string, a:lnum)
+
+        if l:afterbreakpoint[0] != 0
+            call feedkeys("r\<CR>", 'n')
+        else
+            "echom 'fallling back to old method'
+            call winrestview(l:winview)
+            return 1
+        endif
+    endif
+  endif
+
+  call feedkeys('gqq', 'n')
+endfunction
+
+function! s:isBetweenBrackets(winview)
+  " Check if match is inside brackets
+  let l:skip = s:skip_string
+  return s:isBetweenPair('(', ')', a:winview, l:skip)
+    \ || s:isBetweenPair('{', '}', a:winview, l:skip)
+    \ || s:isBetweenPair('\[', '\]', a:winview, l:skip)
+endfunction
+
+function! s:isBetweenPair(left, right, winview, skip)
+  call winrestview(a:winview)
+  let l:bracket = searchpairpos(a:left, '', a:right, 'bW', a:skip)
+  return l:bracket[0] != 0
+endfunction
+
+function! s:VirtcolToCol(lnum, cnum)
+    let l:last = virtcol([a:lnum, '$'])
+    let l:cnum = a:cnum
+    let l:vcol = virtcol([a:lnum, l:cnum])
+    while l:vcol <= a:cnum && l:vcol < l:last
+        let l:cnum += 1
+        let l:vcol = virtcol([a:lnum, l:cnum])
+    endwhile
+    return l:cnum - 1
 endfunction
