@@ -61,7 +61,7 @@ let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 " jedi* refers to syntax definitions from jedi-vim for call signatures, which
 " are inserted temporarily into the buffer.
 let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "\\vstring|comment|pythonbytes|jedi\\S"'
+            \ '=~? "\\vstring|comment|^pythonbytes%(contents)=$|jedi\\S"'
 
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'
