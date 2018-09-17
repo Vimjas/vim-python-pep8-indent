@@ -3,6 +3,7 @@ require "spec_helper"
 describe "handles byte strings" do
   before(:all) {
       vim.command 'syn region pythonBytes start=+[bB]"+ skip=+\\\\\|\\"\|\\$+ excludenl end=+"+ end=+$+ keepend contains=pythonBytesError,pythonBytesContent,@Spell'
+      vim.command "syn match pythonBytesEscape       '\\\\$'"
   }
 
   before(:each) {
@@ -22,5 +23,14 @@ describe "handles byte strings" do
             ).should == "['pythonBytes']"
     vim.feedkeys 'o'
     indent.should == 0
+  end
+
+  it "it indents backslash continuation correctly" do
+    vim.feedkeys 'iwith foo, \<Bslash>\<Esc>'
+    vim.echo('getline(".")').should == "with foo, \\"
+    vim.echo('map(synstack(line("."), col(".")), "synIDattr(v:val, \"name\")")'
+            ).should == "['pythonBytesEscape']"
+    vim.feedkeys 'o'
+    indent.should == 8
   end
 end
