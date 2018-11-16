@@ -80,13 +80,17 @@ let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name
             \ '=~? "\\vcomment|jedi\\S"'
 
 " Also ignore anything concealed.
-" Wrapper around synconcealed for older Vim (7.3.429, used on Travis CI).
-function! s:is_concealed(line, col)
-    let concealed = synconcealed(a:line, a:col)
-    return len(concealed) && concealed[0]
-endfunction
-if has('conceal')
-    let s:skip_special_chars .= '|| s:is_concealed(line("."), col("."))'
+" TODO: doc; likely only necessary with jedi-vim, where a better version is
+" planned (https://github.com/Vimjas/vim-python-pep8-indent/pull/98).
+if get(g:, 'python_pep8_indent_skip_concealed', 0)
+    " Wrapper around synconcealed for older Vim (7.3.429, used on Travis CI).
+    function! s:is_concealed(line, col)
+        let concealed = synconcealed(a:line, a:col)
+        return len(concealed) && concealed[0]
+    endfunction
+    if has('conceal')
+        let s:skip_special_chars .= '|| s:is_concealed(line("."), col("."))'
+    endif
 endif
 
 
