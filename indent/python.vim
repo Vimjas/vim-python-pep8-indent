@@ -38,6 +38,15 @@ if !exists('g:python_pep8_indent_hang_closing')
     let g:python_pep8_indent_hang_closing = 0
 endif
 
+" TODO: check required patch for timeout argument, likely lower than 7.3.429 though.
+if !exists('g:python_pep8_indent_searchpair_timeout')
+    if has('patch-8.0.1483')
+        let g:python_pep8_indent_searchpair_timeout = 150
+    else
+        let g:python_pep8_indent_searchpair_timeout = 0
+    endif
+endif
+
 let s:block_rules = {
             \ '^\s*elif\>': ['if', 'elif'],
             \ '^\s*except\>': ['try', 'except'],
@@ -110,7 +119,7 @@ function! s:find_opening_paren(...)
     for [p, maxoff] in items(s:paren_pairs)
         let stopline = max([0, line('.') - maxoff, nearest[0]])
         let next = searchpairpos(
-           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline)
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline, g:python_pep8_indent_searchpair_timeout)
         if next[0] && (next[0] > nearest[0] || (next[0] == nearest[0] && next[1] > nearest[1]))
             let nearest = next
         endif
@@ -364,7 +373,7 @@ function! GetPythonPEPIndent(lnum)
         if match_quotes != -1
             " closing multiline string
             let quotes = line[match_quotes:(match_quotes+2)]
-            let pairpos = searchpairpos(quotes, '', quotes, 'b')
+            let pairpos = searchpairpos(quotes, '', quotes, 'b', 1, g:python_pep8_indent_searchpair_timeout)
             if pairpos[0] != 0
                 return indent(pairpos[0])
             else
