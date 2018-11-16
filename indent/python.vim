@@ -77,9 +77,6 @@ if has('conceal')
 endif
 
 
-let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "comment"'
-
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
 if exists('*shiftwidth')
@@ -104,7 +101,9 @@ function! s:find_opening_paren(...)
     endif
 
     " Return if cursor is in a comment.
-    exe 'if' s:skip_search '| return [0, 0] | endif'
+    if synIDattr(synID(line('.'), col('.'), 0), 'name') =~? 'comment'
+        return [0, 0]
+    endif
 
     let nearest = [0, 0]
     for [p, maxoff] in items(s:paren_pairs)
