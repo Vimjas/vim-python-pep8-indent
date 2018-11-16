@@ -69,8 +69,12 @@ let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 " Skip strings and comments. Return 1 for chars to skip.
 " jedi* refers to syntax definitions from jedi-vim for call signatures, which
 " are inserted temporarily into the buffer.
-let s:skip_special_chars = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "\\vstring|comment|^pythonbytes%(contents)=$|jedi\\S"'
+" let s:skip_special_chars = '(execute("sleep 100m") && 0) || synIDattr(synID(line("."), col("."), 0), "name") ' .
+function! s:_skip_special_chars()
+    return synIDattr(synID(line('.'), col('.'), 0), 'name')
+            \ =~? "\\vstring|comment|^pythonbytes%(contents)=$|jedi\\S"
+endfunction
+let s:skip_special_chars = 's:_skip_special_chars()'
 
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'
