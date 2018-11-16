@@ -66,31 +66,33 @@ else
 endif
 let s:stop_statement = '^\s*\(break\|continue\|raise\|return\|pass\)\>'
 
-" Skip strings and comments. Return 1 for chars to skip.
-" jedi* refers to syntax definitions from jedi-vim for call signatures, which
-" are inserted temporarily into the buffer.
-" let s:skip_special_chars = '(execute("sleep 100m") && 0) || synIDattr(synID(line("."), col("."), 0), "name") ' .
-function! s:_skip_special_chars()
-    return synIDattr(synID(line('.'), col('.'), 0), 'name')
-            \ =~? "\\vstring|comment|^pythonbytes%(contents)=$|jedi\\S"
-endfunction
-let s:skip_special_chars = 's:_skip_special_chars()'
-
 let s:skip_after_opening_paren = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
             \ '=~? "\\vcomment|jedi\\S"'
 
-" Also ignore anything concealed.
-" TODO: doc; likely only necessary with jedi-vim, where a better version is
-" planned (https://github.com/Vimjas/vim-python-pep8-indent/pull/98).
-if get(g:, 'python_pep8_indent_skip_concealed', 0)
+if !get(g:, 'python_pep8_indent_skip_concealed', 0) || !has('conceal')
+    " Skip strings and comments. Return 1 for chars to skip.
+    " jedi* refers to syntax definitions from jedi-vim for call signatures, which
+    " are inserted temporarily into the buffer.
+    function! s:_skip_special_chars(line, col)
+        return synIDattr(synID(a:line, a:col, 0), 'name')
+                \ =~? "\\vstring|comment|^pythonbytes%(contents)=$|jedi\\S"
+    endfunction
+else
+    " Also ignore anything concealed.
+    " TODO: doc; likely only necessary with jedi-vim, where a better version is
+    " planned (https://github.com/Vimjas/vim-python-pep8-indent/pull/98).
+
     " Wrapper around synconcealed for older Vim (7.3.429, used on Travis CI).
     function! s:is_concealed(line, col)
         let concealed = synconcealed(a:line, a:col)
         return len(concealed) && concealed[0]
     endfunction
-    if has('conceal')
-        let s:skip_special_chars .= '|| s:is_concealed(line("."), col("."))'
-    endif
+
+    function! s:_skip_special_chars(line, col)
+        return synIDattr(synID(a:line, a:col, 0), 'name')
+                \ =~? "\\vstring|comment|^pythonbytes%(contents)=$|jedi\\S"
+                \ || s:is_concealed(a:line, a:col)
+    endfunction
 endif
 
 
@@ -125,8 +127,19 @@ function! s:find_opening_paren(...)
     let nearest = [0, 0]
     for [p, maxoff] in items(s:paren_pairs)
         let stopline = max([0, line('.') - maxoff, nearest[0]])
-        let next = searchpairpos(
-           \ '\V'.p[0], '', '\V'.p[1], 'bnW', s:skip_special_chars, stopline, g:python_pep8_indent_searchpair_timeout)
+        let found = 0
+        while 1
+            let next = searchpairpos(
+               \ '\V'.p[0], '', '\V'.p[1], 'bnW', '', stopline, g:python_pep8_indent_searchpair_timeout)
+
+            if !next[0]
+                break
+            endif
+            if !s:_skip_special_chars(next[0], next[1])
+                break
+            endif
+            call cursor(next[0], next[1])
+        endwhile
         if next[0] && (next[0] > nearest[0] || (next[0] == nearest[0] && next[1] > nearest[1]))
             let nearest = next
         endif
@@ -281,24 +294,23 @@ function! s:indent_like_previous_line(lnum)
     let base = indent(start)
     let current = indent(a:lnum)
 
-    " Jump to last character in previous line.
-    call cursor(lnum, len(text))
-    let ignore_last_char = eval(s:skip_special_chars)
+    " Ignore last character in previous line?
+    let lastcol = len(text)
+    let col = lastcol
 
     " Search for final colon that is not inside something to be ignored.
     while 1
-        let curpos = getpos('.')[2]
-        if curpos == 1 | break | endif
-        if text[curpos-1] =~# '\s' || eval(s:skip_special_chars)
-            normal! h
+        if col == 1 | break | endif
+        if text[col-1] =~# '\s' || s:_skip_special_chars(lnum, col)
+            let col = col - 1
             continue
-        elseif text[curpos-1] ==# ':'
+        elseif text[col-1] ==# ':'
             return base + s:sw()
         endif
         break
     endwhile
 
-    if text =~# '\\$' && !ignore_last_char
+    if text =~# '\\$' && !s:_skip_special_chars(lnum, lastcol)
         " If this line is the continuation of a control statement
         " indent further to distinguish the continuation line
         " from the next logical line.
