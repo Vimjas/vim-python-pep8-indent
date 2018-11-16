@@ -289,7 +289,7 @@ function! s:indent_like_previous_line(lnum)
     while 1
         let curpos = getpos('.')[2]
         if curpos == 1 | break | endif
-        if eval(s:skip_special_chars) || text[curpos-1] =~# '\s'
+        if text[curpos-1] =~# '\s' || eval(s:skip_special_chars)
             normal! h
             continue
         elseif text[curpos-1] ==# ':'
