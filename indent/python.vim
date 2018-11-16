@@ -381,11 +381,12 @@ function! GetPythonPEPIndent(lnum)
         if match_quotes != -1
             " closing multiline string
             let quotes = line[match_quotes:(match_quotes+2)]
-            let pairpos = searchpairpos(quotes, '', quotes, 'b', 1, g:python_pep8_indent_searchpair_timeout)
+            call cursor(a:lnum, 1)
+            let pairpos = searchpairpos(quotes, '', quotes, 'bW', '', 0, g:python_pep8_indent_searchpair_timeout)
             if pairpos[0] != 0
                 return indent(pairpos[0])
             else
-                " TODO: test to cover this!
+                return -1
             endif
         endif
 

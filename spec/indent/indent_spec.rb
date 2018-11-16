@@ -502,11 +502,26 @@ shared_examples_for "multiline strings" do
   end
 
   describe "when after a docstring" do
-    before { vim.feedkeys 'i    """' }
     it "it does indent the next line to the docstring" do
-      vim.feedkeys '\<CR>'
+      vim.feedkeys 'i    """\<CR>'
       indent.should == 4
       proposed_indent.should == 4
+    end
+
+    it "indents the closing docstring quotes" do
+      vim.feedkeys 'i    """\<CR>\<CR>"""'
+      indent.should == 4
+      proposed_indent.should == 4
+      vim.echo('getline(3)').should == '    """'
+    end
+
+    it "indents non-matching docstring quotes" do
+      vim.feedkeys 'i    """\<CR>\<Esc>'
+      vim.feedkeys "0C'''"
+      vim.echo('line(".")').should == "4"
+      vim.echo('getline(".")').should == "'''"
+      indent.should == 0
+      proposed_indent.should == -1
     end
   end
 
