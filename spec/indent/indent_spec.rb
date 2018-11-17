@@ -700,3 +700,22 @@ describe "Compact multiline dict" do
     proposed_indent.should == 0
   end
 end
+
+describe "Using O" do
+  before { vim.feedkeys 'iif foo:\<CR>' }
+
+  it "respects autoindent" do
+    vim.feedkeys '1\<CR>\<CR>'
+    indent.should == shiftwidth
+    vim.feedkeys '\<Esc>ko'
+    indent.should == shiftwidth
+    vim.feedkeys '\<Esc>kO'
+    indent.should == shiftwidth
+    # Uses/keeps indent from line above
+    vim.feedkeys '\<Esc>i2\<Esc>O'
+    indent.should == shiftwidth
+    # Uses/keeps indent from line above
+    vim.feedkeys '\<Esc>j\<Esc>O'
+    indent.should == 0
+  end
+end
