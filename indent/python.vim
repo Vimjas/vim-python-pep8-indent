@@ -313,7 +313,7 @@ function! s:indent_like_previous_line(lnum)
         return -1
     endif
 
-    if !empty && s:is_dedented_already(current, base)
+    if (current || !empty) && s:is_dedented_already(current, base)
         return -1
     endif
 
