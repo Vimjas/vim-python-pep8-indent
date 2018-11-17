@@ -719,3 +719,11 @@ describe "Using O" do
     indent.should == 0
   end
 end
+
+describe "searchpairpos" do
+  before { vim.feedkeys '\<ESC>ggdG' }
+  it "handles nested parenthesis" do
+    vim.feedkeys 'iif foo.startswith("("):\<CR>'
+    indent.should == shiftwidth
+  end
+end

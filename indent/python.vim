@@ -119,16 +119,11 @@ function! s:find_opening_paren(lnum, col)
 
     let nearest = [0, 0]
     let timeout = g:python_pep8_indent_searchpair_timeout
+    let skip_special_chars = 's:_skip_special_chars(line("."), col("."))'
     for [p, maxoff] in items(s:paren_pairs)
         let stopline = max([0, line('.') - maxoff, nearest[0]])
-        let found = 0
-        while 1
-            let next = searchpairpos('\V'.p[0], '', '\V'.p[1], 'bnW', '', stopline, timeout)
-            if !next[0] || !s:_skip_special_chars(next[0], next[1])
-                break
-            endif
-            call cursor(next[0], next[1])
-        endwhile
+        let next = searchpairpos(
+           \ '\V'.p[0], '', '\V'.p[1], 'bnW', skip_special_chars, stopline, timeout)
         if next[0] && (next[0] > nearest[0] || (next[0] == nearest[0] && next[1] > nearest[1]))
             let nearest = next
         endif
