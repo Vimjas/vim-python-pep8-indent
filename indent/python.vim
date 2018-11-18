@@ -95,7 +95,6 @@ else
     endfunction
 endif
 
-
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
 if exists('*shiftwidth')
