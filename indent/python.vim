@@ -77,9 +77,6 @@ if has('conceal')
 endif
 
 
-let s:skip_search = 'synIDattr(synID(line("."), col("."), 0), "name") ' .
-            \ '=~? "comment"'
-
 " Use 'shiftwidth()' instead of '&sw'.
 " (Since Vim patch 7.3.629, 'shiftwidth' can be set to 0 to follow 'tabstop').
 if exists('*shiftwidth')
@@ -93,18 +90,13 @@ else
 endif
 
 " Find backwards the closest open parenthesis/bracket/brace.
-function! s:find_opening_paren(...)
-    " optional arguments: line and column (defaults to 1) to search around
-    if a:0 > 0
-        let view = winsaveview()
-        call cursor(a:1, a:0 > 1 ? a:2 : 1)
-        let ret = s:find_opening_paren()
-        call winrestview(view)
-        return ret
+function! s:find_opening_paren(lnum, col)
+    " Return if cursor is in a comment.
+    if synIDattr(synID(a:lnum, a:col, 0), 'name') =~? 'comment'
+        return [0, 0]
     endif
 
-    " Return if cursor is in a comment.
-    exe 'if' s:skip_search '| return [0, 0] | endif'
+    call cursor(a:lnum, a:col)
 
     let nearest = [0, 0]
     for [p, maxoff] in items(s:paren_pairs)
@@ -125,7 +117,7 @@ function! s:find_start_of_multiline_statement(lnum)
         if getline(lnum - 1) =~# '\\$'
             let lnum = prevnonblank(lnum - 1)
         else
-            let [paren_lnum, _] = s:find_opening_paren(lnum)
+            let [paren_lnum, _] = s:find_opening_paren(lnum, 1)
             if paren_lnum < 1
                 return lnum
             else
@@ -182,7 +174,7 @@ endfunction
 
 " Line up with open parenthesis/bracket/brace.
 function! s:indent_like_opening_paren(lnum)
-    let [paren_lnum, paren_col] = s:find_opening_paren(a:lnum)
+    let [paren_lnum, paren_col] = s:find_opening_paren(a:lnum, 1)
     if paren_lnum <= 0
         return -2
     endif
@@ -212,7 +204,7 @@ function! s:indent_like_opening_paren(lnum)
     " from the next logical line.
     if text =~# b:control_statement && res == base + s:sw()
         " But only if not inside parens itself (Flake's E127).
-        let [paren_lnum, _] = s:find_opening_paren(paren_lnum)
+        let [paren_lnum, _] = s:find_opening_paren(paren_lnum, 1)
         if paren_lnum <= 0
             return res + s:sw()
         endif
