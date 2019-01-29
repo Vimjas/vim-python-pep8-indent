@@ -16,7 +16,6 @@ for file in ./spec/indent/*_spec.rb; do
   bundle exec rspec "$file" $RSPEC_OPTIONS || ret=1
 
   for p in "${PYTHON_PEP8_INDENT_TEST_PROFILE_BASE}".*; do
-    cat "$p"
     covimerage write_coverage --append "$p"
     rm "$p"
     covimerage report -m
