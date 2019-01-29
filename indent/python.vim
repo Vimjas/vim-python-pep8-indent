@@ -325,7 +325,7 @@ function! s:indent_like_previous_line(lnum)
         return -1
     endif
 
-    if (current_indent || !empty_or_only_whitespace) && s:is_dedented_already(current_indent, base)
+    if (&autoindent || current_indent || !empty_or_only_whitespace) && s:is_dedented_already(current_indent, base)
         return -1
     endif
 
