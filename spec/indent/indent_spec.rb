@@ -727,3 +727,16 @@ describe "searchpairpos" do
     indent.should == shiftwidth
   end
 end
+
+describe "o within TODO" do
+  before {
+    vim.feedkeys 'iif 1:  # TODO\<Esc>'
+    # Assertion that we have a pythonTodo here.
+    vim.echo('synIDattr(synID(line("."), col("."), 0), "name")').should match 'pythonTodo'
+  }
+
+  it "respects autoindent" do
+    vim.feedkeys 'o'
+    indent.should == shiftwidth
+  end
+end
