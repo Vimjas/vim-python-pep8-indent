@@ -744,3 +744,14 @@ describe "o within TODO" do
     indent.should == shiftwidth
   end
 end
+
+describe "elif ignores previous else" do
+  before {
+    vim.feedkeys '\<ESC>ggdG'
+  }
+
+  it "respects autoindent" do
+    vim.feedkeys 'iif 1:\<CR>if 2:\<CR>pass\<CR>else:\<CR>pass\<CR>elif 3:\<Esc>'
+    indent.should == 0
+  end
+end
