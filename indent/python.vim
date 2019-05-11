@@ -212,7 +212,7 @@ function! s:indent_like_opening_paren(lnum)
         if starts_with_closing_paren && !hang_closing
             let res = base
         else
-            let res = base + s:sw()
+            return base + s:sw()
         endif
     else
         " Indent to match position of opening paren.
