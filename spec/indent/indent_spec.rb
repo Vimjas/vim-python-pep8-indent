@@ -702,7 +702,10 @@ describe "Compact multiline dict" do
 end
 
 describe "Using O" do
-  before { vim.feedkeys 'iif foo:\<CR>' }
+  before {
+    vim.feedkeys '\<ESC>ggdG'
+    vim.feedkeys 'iif foo:\<CR>'
+  }
 
   it "respects autoindent" do
     vim.feedkeys '1\<CR>\<CR>'
@@ -724,6 +727,20 @@ describe "searchpairpos" do
   before { vim.feedkeys '\<ESC>ggdG' }
   it "handles nested parenthesis" do
     vim.feedkeys 'iif foo.startswith("("):\<CR>'
+    indent.should == shiftwidth
+  end
+end
+
+describe "o within TODO" do
+  before {
+    vim.feedkeys '\<ESC>ggdG'
+    vim.feedkeys 'iif 1:  # TODO\<Esc>'
+    # Assertion that we have a pythonTodo here.
+    vim.echo('synIDattr(synID(line("."), col("."), 0), "name")').should match 'pythonTodo'
+  }
+
+  it "respects autoindent" do
+    vim.feedkeys 'o'
     indent.should == shiftwidth
   end
 end
