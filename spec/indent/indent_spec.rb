@@ -744,3 +744,18 @@ describe "o within TODO" do
     indent.should == shiftwidth
   end
 end
+
+describe "elif after else" do
+  before {
+    vim.feedkeys '\<ESC>ggdG'
+  }
+
+  it "is indented to the outer if" do
+    vim.feedkeys 'iif 1:\<CR>if 2:\<CR>pass\<CR>else:\<CR>pass\<CR>elif 3:\<Esc>'
+    indent.should == 0
+
+    vim.feedkeys '\<ESC>ggdG'
+    vim.feedkeys 'i    if 1:\<CR>if 2:\<CR>pass\<CR>else:\<CR>pass\<CR>elif 3:\<Esc>'
+    indent.should == 4
+  end
+end
