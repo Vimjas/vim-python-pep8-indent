@@ -255,9 +255,8 @@ function! s:indent_like_block(lnum)
             endif
 
             let [blocks, skip] = blocks_ignore
-
             let indents = s:find_start_of_block(a:lnum - 1, blocks, skip, multiple)
-            if !len(indents)
+            if empty(indents)
                 return -1
             endif
             if len(indents) == 1
