@@ -205,14 +205,14 @@ shared_examples_for "vim" do
   describe "when using a function definition" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'idef long_function_name(\<CR>arg'
-          indent.should == shiftwidth * 2
+          indent.should == shiftwidth
       end
   end
 
   describe "when using a class definition" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'iclass Foo(\<CR>'
-          indent.should == shiftwidth * 2
+          indent.should == shiftwidth
       end
   end
 
@@ -430,7 +430,7 @@ shared_examples_for "vim" do
 
     it "ignores the call signature after a function" do
       vim.feedkeys 'idef f(  JEDI_CALL_SIGNATURE\<CR>'
-      indent.should == shiftwidth * 2
+      indent.should == shiftwidth
     end
   end
 end

@@ -23,14 +23,14 @@ describe "vim for cython" do
   describe "when using a cdef function definition" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'icdef long_function_name(\<CR>arg'
-          indent.should == shiftwidth * 2
+          indent.should == shiftwidth
       end
   end
 
   describe "when using a cpdef function definition" do
       it "indents shiftwidth spaces" do
           vim.feedkeys 'icpdef long_function_name(\<CR>arg'
-          indent.should == shiftwidth * 2
+          indent.should == shiftwidth
       end
   end
 end
