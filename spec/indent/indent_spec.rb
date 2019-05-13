@@ -213,7 +213,13 @@ shared_examples_for "vim" do
       it "handles indent with closing parenthesis on new line" do
           vim.feedkeys 'idef long_function_name(\<CR>arg'
           indent.should == shiftwidth
-          vim.feedkeys '\<CR>):'
+          vim.feedkeys '\<CR>'
+          indent.should == shiftwidth
+          vim.feedkeys ')'
+          indent.should == (hang_closing ? shiftwidth * 2 : 0)
+          vim.feedkeys ':'
+          indent.should == (hang_closing ? shiftwidth * 2 : 0)
+          vim.feedkeys '\<Esc>k'
           indent.should == shiftwidth
       end
   end
