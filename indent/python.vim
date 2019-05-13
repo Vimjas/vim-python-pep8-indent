@@ -222,7 +222,12 @@ function! s:indent_like_opening_paren(lnum)
         if starts_with_closing_paren && !hang_closing
             let res = base
         else
-            return base + s:sw()
+            let res = base + s:sw()
+
+            " Special case for parenthesis.
+            if text[paren_col-1] ==# '(' && getline(a:lnum) !~# '\v\)\s*:?\s*$'
+                return res
+            endif
         endif
     else
         " Indent to match position of opening paren.
