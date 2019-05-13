@@ -203,8 +203,23 @@ shared_examples_for "vim" do
   end
 
   describe "when using a function definition" do
-      it "indents shiftwidth spaces" do
+      it "handles indent with closing parenthesis on same line" do
           vim.feedkeys 'idef long_function_name(\<CR>arg'
+          indent.should == shiftwidth
+          vim.feedkeys '):'
+          indent.should == shiftwidth * 2
+      end
+
+      it "handles indent with closing parenthesis on new line" do
+          vim.feedkeys 'idef long_function_name(\<CR>arg'
+          indent.should == shiftwidth
+          vim.feedkeys '\<CR>'
+          indent.should == shiftwidth
+          vim.feedkeys ')'
+          indent.should == (hang_closing ? shiftwidth * 2 : 0)
+          vim.feedkeys ':'
+          indent.should == (hang_closing ? shiftwidth * 2 : 0)
+          vim.feedkeys '\<Esc>k'
           indent.should == shiftwidth
       end
   end
