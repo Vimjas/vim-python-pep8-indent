@@ -76,8 +76,9 @@ if !get(g:, 'python_pep8_indent_skip_concealed', 0) || !has('conceal')
     " jedi* refers to syntax definitions from jedi-vim for call signatures, which
     " are inserted temporarily into the buffer.
     function! s:_skip_special_chars(line, col)
-        return synIDattr(synID(a:line, a:col, 0), 'name')
-              \ =~? s:special_chars_syn_pattern
+        return match(map(synstack(a:line, a:col),
+              \ "synIDattr(v:val, 'name')"),
+              \ '\c'.s:special_chars_syn_pattern) != -1
     endfunction
 else
     " Also ignore anything concealed.
@@ -91,8 +92,9 @@ else
     endfunction
 
     function! s:_skip_special_chars(line, col)
-        return synIDattr(synID(a:line, a:col, 0), 'name')
-              \ =~? s:special_chars_syn_pattern
+        return match(map(synstack(a:line, a:col),
+              \ "synIDattr(v:val, 'name')"),
+              \ '\c'.s:special_chars_syn_pattern) != -1
               \ || s:is_concealed(a:line, a:col)
     endfunction
 endif
