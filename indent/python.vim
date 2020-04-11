@@ -292,7 +292,6 @@ function! s:indent_like_previous_line(lnum)
     let text = getline(lnum)
     let start = s:find_start_of_multiline_statement(lnum)
     let base = indent(start)
-    let current = indent(a:lnum)
 
     " Ignore last character in previous line?
     let lastcol = len(text)
@@ -322,26 +321,29 @@ function! s:indent_like_previous_line(lnum)
         return base + s:sw()
     endif
 
-    let empty = getline(a:lnum) =~# '^\s*$'
+    let empty_or_only_whitespace = getline(a:lnum) =~# '^\s*$'
 
     " Current and prev line are empty, next is not -> indent like next.
-    if empty && a:lnum > 1 &&
+    if empty_or_only_whitespace && a:lnum > 1 &&
           \ (getline(a:lnum - 1) =~# '^\s*$') &&
           \ !(getline(a:lnum + 1) =~# '^\s*$')
       return indent(a:lnum + 1)
     endif
 
+    let current_indent = indent(a:lnum)
+
     " If the previous statement was a stop-execution statement or a pass
     if getline(start) =~# s:stop_statement
         " Remove one level of indentation if the user hasn't already dedented
-        if empty || current > base - s:sw()
+        if empty_or_only_whitespace || current_indent > base - s:sw()
             return base - s:sw()
         endif
         " Otherwise, trust the user
         return -1
     endif
 
-    if (current || !empty) && s:is_dedented_already(current, base)
+    if (current_indent || (&autoindent && current_indent == 0) || !empty_or_only_whitespace)
+          \ && s:is_dedented_already(current_indent, base)
         return -1
     endif
 
