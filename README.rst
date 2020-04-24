@@ -46,7 +46,6 @@ Follow the instructions on installing Vundle_ and add the appropriate plugin lin
 
    Plugin 'Vimjas/vim-python-pep8-indent'
 
-
 NeoBundle
 ^^^^^^^^^
 
@@ -56,6 +55,15 @@ Follow the instructions on installing NeoBundle_ and add the appropriate NeoBund
 
    NeoBundle 'Vimjas/vim-python-pep8-indent'
 
+Vim 8 on Windows without plugin manager
+^^^^^^^^^
+
+Clone the repository to the vim pack folder. This can be done with these commands in the "Git for Windows" Bash terminal.
+
+.. code-block:: shell-session
+
+   $ mkdir -p ~/vimfiles/pack/git-plugins/start
+   $ git clone https://github.com/Vimjas/vim-python-pep8-indent.git ~/vimfiles/pack/git-plugins/start/vim-python-pep8-indent
 
 Configuration
 -------------
