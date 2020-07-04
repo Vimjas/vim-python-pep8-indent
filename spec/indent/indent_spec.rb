@@ -90,6 +90,22 @@ shared_examples_for "vim" do
     end
   end
 
+  describe "after a dictionary key" do
+    before { vim.feedkeys 'imydict = {"12345": ' }
+
+    it "indents to opening paren + shiftwidth" do
+      vim.feedkeys '\<CR>'
+      indent.should == 10 + shiftwidth
+    end
+    it "on a new line indents to opening paren + shiftwidth" do
+      vim.feedkeys '123,\<CR>"4567": '
+      indent.should == 10
+      vim.feedkeys '\<CR>'
+      indent.should == 10 + shiftwidth
+    end
+  end
+
+
   describe "when using gq to reindent a '(' that is" do
     before { vim.feedkeys 'itest(' }
     it "something and has a string without spaces at the end" do
