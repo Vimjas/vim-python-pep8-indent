@@ -436,15 +436,25 @@ shared_examples_for "vim" do
   end
 
   describe "when jedi-vim call signatures are used" do
-    before { vim.command 'syn match jediFunction "JEDI_CALL_SIGNATURE" keepend extend' }
+    before {
+      # jedi-vim uses a buffer variable that holds the original line contents
+      # for concealed lines.
+      vim.command 'let b:_jedi_callsig_orig = {3: "if True:", 4: "def f("}'
+    }
+    after {
+      vim.command 'unlet b:_jedi_callsig_orig'
+    }
 
     it "ignores the call signature after a colon" do
+      # Assert that we are in line 3.
+      vim.echo("getcurpos()[1]").to_i.should == 3
       vim.feedkeys 'iif True:  JEDI_CALL_SIGNATURE\<CR>'
       indent.should == shiftwidth
     end
 
     it "ignores the call signature after a function" do
-      vim.feedkeys 'idef f(  JEDI_CALL_SIGNATURE\<CR>'
+      vim.echo("getcurpos()[1]").to_i.should == 3
+      vim.feedkeys 'odef f(  JEDI_CALL_SIGNATURE\<CR>'
       indent.should == shiftwidth
     end
   end
