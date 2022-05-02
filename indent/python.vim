@@ -20,9 +20,10 @@
 " <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 " Only load this indent file when no other was loaded.
-if exists('b:did_indent')
+if exists('b:did_python_pep8_indent')
     finish
 endif
+let b:did_python_pep8_indent = 1
 let b:did_indent = 1
 
 setlocal nolisp
